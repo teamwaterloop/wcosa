@@ -9,6 +9,7 @@
 #ifndef EXLIB_INCLUDED
 #   error "Expected to find exlib"
 #endif
+static_assert(get_num() > 0, "Expected exlib get_num() to be positive");
 
 // Use the built-in led
 OutputPin ledPin(Board::LED);
@@ -39,7 +40,7 @@ void loop() {
     Watchdog::begin(512);
 #endif
 
-    delay(2000);
+    delay(get_delay());
 
 #ifdef USE_WATCHDOG_SHUTDOWN
     Watchdog::end();
