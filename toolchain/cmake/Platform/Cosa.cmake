@@ -28,6 +28,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 # Set module paths to include `cosa-cmake` components
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
         ${CMAKE_CURRENT_LIST_DIR}/Initialization
+        ${CMAKE_CURRENT_LIST_DIR}/Pollute
         ${CMAKE_CURRENT_LIST_DIR}/Utils
         ${CMAKE_CURRENT_LIST_DIR}/Vendor)
 
@@ -51,10 +52,10 @@ include(VariableValidator)
 # Initialization scripts
 include(CosaInitializer)
 
-# Mark configuration as complete
-set(COSA_SCRIPT_EXECUTED True)
-
 # Include all scripts from `arduino-cmake`
 include(ArduinoCmakeScripts)
 
 write_sep()
+
+# Mark configuration as complete
+set(COSA_SCRIPT_EXECUTED True)

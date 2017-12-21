@@ -20,7 +20,11 @@ include(Printer)
 include(GeneratorSettingsLoader)
 include(ArduinoSketchToCppConverter)
 include(ArduinoSketchFactory)
-include(CoreLibraryFactory)
+
+# Include an overridden library factory method
+# include(CoreLibraryFactory)
+include(CosaCoreLibraryFactory)
+
 include(ArduinoLibraryFactory)
 include(BlacklistedLibrariesRemover)
 include(ArduinoExampleFactory)
