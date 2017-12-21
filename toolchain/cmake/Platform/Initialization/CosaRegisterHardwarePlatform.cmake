@@ -59,6 +59,14 @@ unset(example_board_0)
 unset(example_board_1)
 unset(example_board_2)
 
+# Have to manually set
+# ${cosa_board}.build.core=cosa
+# ${cosa_board}.build.variant=${cosa_board}
+foreach (cosa_board ${COSA_BOARDS})
+    set(${cosa_board}.build.core cosa)
+    set(${cosa_board}.build.variant ${cosa_board})
+endforeach ()
+
 # Read in variant boards
 info("Reading variants from directory")
 file(GLOB variant_sub_dir ${COSA_VARIANTS_PATH}/*)

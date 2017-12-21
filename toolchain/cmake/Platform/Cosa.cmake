@@ -54,4 +54,7 @@ include(CosaInitializer)
 # Mark configuration as complete
 set(COSA_SCRIPT_EXECUTED True)
 
+# Include all scripts from `arduino-cmake`
+include(ArduinoCmakeScripts)
+
 write_sep()
