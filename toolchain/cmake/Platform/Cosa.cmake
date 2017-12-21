@@ -37,6 +37,13 @@ include(JsonParser)
 # Include utilities
 include(CosaOutput)
 
+# If on Windows, ensure that ARDUINO_SDK_PATH is specified
+if (WIN32 OR CYGWIN OR MINGW)
+    if (NOT ARDUINO_SDK_PATH OR NOT EXISTS ${ARDUINO_SDK_PATH})
+        fatal("Windows systems must specify ARDUINO_SDK_PATH")
+    endif ()
+endif ()
+
 # Include external utilities
 include(CMakeParseArguments)
 include(VariableValidator)

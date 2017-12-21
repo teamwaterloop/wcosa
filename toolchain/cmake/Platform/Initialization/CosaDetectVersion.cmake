@@ -9,17 +9,17 @@
 #
 #=============================================================================#
 
-message(STATUS "Determining `cosa` version")
+info("Determining `cosa` version")
 
 find_file(PACKAGE_COSA_INDEX_PATH
         NAMES package_cosa_index.json
         PATHS ${COSA_SDK_PATH})
 
 if (NOT PACKAGE_COSA_INDEX_PATH)
-    message(FATAL_ERROR "Failed to find `package_cosa_index.json` in COSA_SDK_PATH")
+    fatal("Failed to find `package_cosa_index.json` in COSA_SDK_PATH")
 endif ()
 
-message(STATUS "Found package file: ${PACKAGE_COSA_INDEX_PATH}")
+info("Found package file: ${PACKAGE_COSA_INDEX_PATH}")
 
 # Read in the file and parse JSON
 file(READ ${PACKAGE_COSA_INDEX_PATH} package_cosa_index_raw)
@@ -38,7 +38,7 @@ set(COSA_SDK_VERSION_MAJOR ${cosa_sdk_version_major} CACHE STRING "")
 set(COSA_SDK_VERSION_MINOR ${cosa_sdk_version_minor} CACHE STRING "")
 set(COSA_SDK_VERSION_PATCH ${cosa_sdk_version_patch} CACHE STRING "")
 
-message(STATUS "Identified `cosa` version: ${COSA_SDK_VERSION_MAJOR}.${COSA_SDK_VERSION_MINOR}.${COSA_SDK_VERSION_PATCH}")
+info("Identified `cosa` version: ${COSA_SDK_VERSION_MAJOR}.${COSA_SDK_VERSION_MINOR}.${COSA_SDK_VERSION_PATCH}")
 
 # Clean up variables
 sbeClearJson(package_cosa_index_json)

@@ -9,3 +9,6 @@ include(CosaDetectVersion)
 
 # Register paths
 include(CosaRegisterHardwarePlatform)
+
+# Find examples, libraries, and programs
+include(CosaFindPrograms)
