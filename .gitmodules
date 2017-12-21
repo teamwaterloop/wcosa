@@ -1,0 +1,6 @@
+[submodule "toolchain/arduino-cmake"]
+	path = toolchain/arduino-cmake
+	url = https://github.com/Mogball/arduino-cmake
+[submodule "toolchain/cosa"]
+	path = toolchain/cosa
+	url = https://github.com/Mogball/Cosa
