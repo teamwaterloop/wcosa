@@ -65,28 +65,28 @@ endif ()
 #===================================================#
 
 if (EXISTS ${ARDUINO_SDK_PATH})
-    find_program(COSA_AVR_SIZE_PROGRAM
+    find_program(COSA_AVRSIZE_PROGRAM
             names avr-size
             PATHS ${ARDUINO_SDK_PATH}
             PATH_SUFFIXES hardware/tools hardware/tools/avr/bin
             NO_DEFAULT_PATH)
 endif ()
 
-set(cosa_avr_size_known_paths
+set(cosa_avr_binutils_paths
         /usr/bin
         /usr/local/bin
         /usr/local/Cellar/avr-binutils/2.29/bin)
 
-find_program(COSA_AVR_SIZE_PROGRAM
+find_program(COSA_AVRSIZE_PROGRAM
         names avr-size
-        PATHS ${cosa_avr_size_known_paths}
+        PATHS ${cosa_avr_binutils_paths}
         DOC "Path to avr-size program binary.")
 
-find_program(COSA_AVR_SIZE_PROGRAM
+find_program(COSA_AVRSIZE_PROGRAM
         names avr-size
         DOC "Path to avr-size program binary.")
 
-if (NOT COSA_AVR_SIZE_PROGRAM OR NOT EXISTS ${COSA_AVR_SIZE_PROGRAM})
+if (NOT COSA_AVRSIZE_PROGRAM OR NOT EXISTS ${COSA_AVRSIZE_PROGRAM})
     fatal("Unable to find path to `avr-size`")
 endif ()
 
@@ -106,10 +106,47 @@ if (NOT COSA_AVRDUDE_CONFIG_PATH OR NOT EXISTS ${COSA_AVRDUDE_CONFIG_PATH})
             DOC "Path to avrdude programmer configuration file.")
 endif ()
 
+# Cosa ships with boilerplate `Arduino.h` and `Cosa.h` headers
+find_file(HEADER_COSA_H
+        NAMES Cosa.h
+        PATHS ${COSA_SDK_PATH}/cores/cosa
+        DOC "Path to Cosa platform's main header file.")
+find_file(HEADER_ARDUINO_H
+        NAMES Arduino.h
+        PATHS ${COSA_SDK_PATH}/cores/cosa
+        DOC "Path to Arduino platform's main header file.")
+if (NOT HEADER_COSA_H OR NOT EXISTS ${HEADER_COSA_H})
+    warning("Unable to find HEADER_COSA_H")
+endif ()
+if (NOT HEADER_ARDUINO_H OR NOT EXISTS ${HEADER_ARDUINO_H})
+    warning("Unable to find HEADER_ARDUINO_H")
+endif ()
 
-info("Found paths")
+# Check for CMAKE_OBJCOPY
+if (NOT CMAKE_OBJCOPY OR NOT EXISTS ${CMAKE_OBJCOPY})
+    find_program(COSA_AVROBJCOPY_PROGRAM
+            NAMES avr-objcopy
+            PATHS cosa_avr_binutils_paths
+            DOC "Path to avr-objcopy binary."
+            NO_DEFAULT_PATH)
+    find_program(COSA_AVROBJCOPY_PROGRAM
+            NAMES avr-objcopy
+            DOC "Path to avr-objcopy binary.")
+    set(CMAKE_OBJCOPY ${COSA_AVROBJCOPY_PROGRAM})
+else ()
+    set(COSA_AVROBJCOPY_PROGRAM ${CMAKE_OBJCOPY})
+endif ()
+
+if (NOT CMAKE_OBJCOPY OR NOT EXISTS ${CMAKE_OBJCOPY})
+    fatal("Failed to find `avr-objcopy`")
+endif ()
+
+info("Found paths and programs")
+info("avrdude:      ${COSA_AVRDUDE_PROGRAM}")
+info("avr-size:     ${COSA_AVRSIZE_PROGRAM}")
+info("avr-objcopy:  ${COSA_AVROBJCOPY_PROGRAM}")
 info("Examples:     ${COSA_EXAMPLES_PATH}")
 info("Libraries:    ${COSA_LIBRARIES_PATH}")
-info("avrdude:      ${COSA_AVRDUDE_PROGRAM}")
-info("avr-size:     ${COSA_AVR_SIZE_PROGRAM}")
 info("avrdude.conf: ${COSA_AVRDUDE_CONFIG_PATH}")
+info("Cosa.h:       ${HEADER_COSA_H}")
+info("Arduino.h:    ${HEADER_ARDUINO_H}")
