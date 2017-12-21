@@ -1,0 +1,6 @@
+#ifndef COSAEXAMPLE_EXLIB_H
+#define COSAEXAMPLE_EXLIB_H
+
+#define EXLIB_INCLUDED true
+
+#endif //COSAEXAMPLE_EXLIB_H

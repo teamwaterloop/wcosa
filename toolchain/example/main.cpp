@@ -4,6 +4,12 @@
 #include "Cosa/RTT.hh"
 #include "Cosa/Watchdog.hh"
 
+#include <exlib.h>
+
+#ifndef EXLIB_INCLUDED
+#   error "Expected to find exlib"
+#endif
+
 // Use the built-in led
 OutputPin ledPin(Board::LED);
 
