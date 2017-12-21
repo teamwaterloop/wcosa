@@ -11,10 +11,6 @@ find_file(COSA_LIBRARIES_PATH
         PATHS ${COSA_SDK_PATH}
         DOC "Path to directory containing Cosa libraries")
 
-info("Found paths")
-info("Examples:  ${COSA_EXAMPLES_PATH}")
-info("Libraries: ${COSA_LIBRARIES_PATH}")
-
 if (NOT COSA_EXAMPLES_PATH OR NOT EXISTS ${COSA_EXAMPLES_PATH})
     fatal("Failed to find COSA_EXAMPLES_PATH to `examples`")
 endif ()
@@ -55,7 +51,6 @@ find_program(COSA_AVRDUDE_PROGRAM
         NAMES avrdude
         DOC "Path to avrdude programmer binary.")
 
-info("avrdude:   ${COSA_AVRDUDE_PROGRAM}")
 if (NOT COSA_AVRDUDE_PROGRAM OR NOT EXISTS ${COSA_AVRDUDE_PROGRAM})
     fatal("Unable to find path to `avrdude`")
 endif ()
@@ -91,7 +86,30 @@ find_program(COSA_AVR_SIZE_PROGRAM
         names avr-size
         DOC "Path to avr-size program binary.")
 
-info("avr-size:  ${COSA_AVR_SIZE_PROGRAM}")
 if (NOT COSA_AVR_SIZE_PROGRAM OR NOT EXISTS ${COSA_AVR_SIZE_PROGRAM})
     fatal("Unable to find path to `avr-size`")
 endif ()
+
+# Cosa ships with its own `avrdude.conf`
+find_file(COSA_AVRDUDE_CONFIG_PATH
+        NAMES avrdude.conf
+        PATHS ${COSA_SDK_PATH}/build
+        DOC "Path to avrdude programmer configuration file.")
+
+if (NOT COSA_AVRDUDE_CONFIG_PATH OR NOT EXISTS ${COSA_AVRDUDE_CONFIG_PATH})
+    warning("Unable to find `avrdude.conf` in `cosa`")
+    warning("Searching in default locations instead")
+    find_file(COSA_AVRDUDE_CONFIG_PATH
+            NAMES avrdude.conf
+            PATHS ${ARDUINO_SDK_PATH} /etc /etc/avrdude
+            PATH_SUFFIXES hardware/tools hardware/tools/avr/etc
+            DOC "Path to avrdude programmer configuration file.")
+endif ()
+
+
+info("Found paths")
+info("Examples:     ${COSA_EXAMPLES_PATH}")
+info("Libraries:    ${COSA_LIBRARIES_PATH}")
+info("avrdude:      ${COSA_AVRDUDE_PROGRAM}")
+info("avr-size:     ${COSA_AVR_SIZE_PROGRAM}")
+info("avrdude.conf: ${COSA_AVRDUDE_CONFIG_PATH}")
