@@ -1,15 +1,9 @@
 write_sep()
 
 # Find examples and libraries
-find_file(COSA_EXAMPLES_PATH
-        NAMES examples
-        PATHS ${COSA_SDK_PATH}
-        DOC "Path to directory containing Cosa built-in examples.")
+SET(COSA_EXAMPLES_PATH "${COSA_SDK_PATH}/examples")
 
-find_file(COSA_LIBRARIES_PATH
-        NAMES libraries
-        PATHS ${COSA_SDK_PATH}
-        DOC "Path to directory containing Cosa libraries")
+SET(COSA_LIBRARIES_PATH "${COSA_SDK_PATH}/libraries")
 
 if (NOT COSA_EXAMPLES_PATH OR NOT EXISTS ${COSA_EXAMPLES_PATH})
     fatal("Failed to find COSA_EXAMPLES_PATH to `examples`")
