@@ -1,5 +1,3 @@
-set(WCOSA_DEBUG True)
-set(ARDUINO_DEBUG True)
 set(CMAKE_TOOLCHAIN_FILE cmake/CosaToolchain.cmake) # Cosa Toolchain
 
 cmake_minimum_required(VERSION 3.1.0)

@@ -12,7 +12,7 @@
 #endif
 static_assert(get_num() > 0, "Expected exlib get_num() to be positive");
 
-DelayGenerator delayGenerator(2000);
+DelayGenerator delayGenerator(500);
 
 // Use the built-in led
 OutputPin ledPin(Board::LED);
