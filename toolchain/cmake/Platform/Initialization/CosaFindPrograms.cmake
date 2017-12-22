@@ -2,7 +2,6 @@ write_sep()
 
 # Find examples and libraries
 SET(COSA_EXAMPLES_PATH "${COSA_SDK_PATH}/examples")
-
 SET(COSA_LIBRARIES_PATH "${COSA_SDK_PATH}/libraries")
 
 if (NOT COSA_EXAMPLES_PATH OR NOT EXISTS ${COSA_EXAMPLES_PATH})
@@ -85,11 +84,8 @@ if (NOT COSA_AVRSIZE_PROGRAM OR NOT EXISTS ${COSA_AVRSIZE_PROGRAM})
 endif ()
 
 # Cosa ships with its own `avrdude.conf`
-find_file(COSA_AVRDUDE_CONFIG_PATH
-        NAMES avrdude.conf
-        PATHS ${COSA_SDK_PATH}/build
-        DOC "Path to avrdude programmer configuration file.")
-
+set(COSA_AVRDUDE_CONFIG_PATH ${COSA_SDK_PATH}/build/avrdude.conf)
+# Else try to find it elsewhere
 if (NOT COSA_AVRDUDE_CONFIG_PATH OR NOT EXISTS ${COSA_AVRDUDE_CONFIG_PATH})
     warning("Unable to find `avrdude.conf` in `cosa`")
     warning("Searching in default locations instead")
@@ -101,14 +97,8 @@ if (NOT COSA_AVRDUDE_CONFIG_PATH OR NOT EXISTS ${COSA_AVRDUDE_CONFIG_PATH})
 endif ()
 
 # Cosa ships with boilerplate `Arduino.h` and `Cosa.h` headers
-find_file(HEADER_COSA_H
-        NAMES Cosa.h
-        PATHS ${COSA_SDK_PATH}/cores/cosa
-        DOC "Path to Cosa platform's main header file.")
-find_file(HEADER_ARDUINO_H
-        NAMES Arduino.h
-        PATHS ${COSA_SDK_PATH}/cores/cosa
-        DOC "Path to Arduino platform's main header file.")
+set(HEADER_COSA_H ${COSA_SDK_PATH}/cores/cosa/Cosa.h)
+set(HEADER_ARDUINO_H ${COSA_SDK_PATH}/cores/cosa/Arduino.h)
 if (NOT HEADER_COSA_H OR NOT EXISTS ${HEADER_COSA_H})
     warning("Unable to find HEADER_COSA_H")
 endif ()

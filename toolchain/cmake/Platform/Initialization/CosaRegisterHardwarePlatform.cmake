@@ -3,28 +3,10 @@ info("Obtaining hardware information from ${COSA_SDK_PATH}")
 
 # Find paths to directories and files
 # Cosa does not provide a `programmers.txt`
-find_file(COSA_CORES_PATH
-        NAMES cores
-        PATHS ${COSA_SDK_PATH}
-        DOC "Path to directory containing the Cosa core sources.")
-
-find_file(COSA_VARIANTS_PATH
-        NAMES variants
-        PATHS ${COSA_SDK_PATH}
-        DOC "Path to directory containing the Cosa variant sources.")
-
-find_file(COSA_BOOTLOADERS_PATH
-        NAMES bootloaders
-        PATHS ${COSA_SDK_PATH}
-        Doc "Path to directory containing the Cosa bootloaders images and sources.")
-
-find_file(COSA_BOARDS_PATH
-        NAMES boards.txt
-        PATHS ${COSA_SDK_PATH}
-        DOC "Path to Cosa boards definition file.")
-
-# Cosa variants are located under `variants/arduino`
-set(COSA_VARIANTS_PATH ${COSA_VARIANTS_PATH}/arduino)
+set(COSA_CORES_PATH ${COSA_SDK_PATH}/cores)
+set(COSA_VARIANTS_PATH ${COSA_SDK_PATH}/variants/arduino)
+set(COSA_BOOTLOADERS_PATH ${COSA_SDK_PATH}/bootloaders)
+set(COSA_BOARDS_PATH ${COSA_SDK_PATH}/boards.txt)
 
 info("Founds paths")
 info("Cores:       ${COSA_CORES_PATH}")
