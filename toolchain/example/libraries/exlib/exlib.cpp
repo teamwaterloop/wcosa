@@ -1,6 +1,9 @@
-#include <stdint.h>
 #include "exlib.h"
 
-static uint16_t get_delay() {
-    return 2000;
+DelayGenerator::DelayGenerator(int delay)
+        : m_delay(delay) {
+}
+
+int DelayGenerator::get_delay() const {
+    return m_delay;
 }

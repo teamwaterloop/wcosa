@@ -5,11 +5,14 @@
 #include "Cosa/Watchdog.hh"
 
 #include <exlib.h>
+#include <ManchesterCodec/ManchesterCodec.h>
 
 #ifndef EXLIB_INCLUDED
 #   error "Expected to find exlib"
 #endif
 static_assert(get_num() > 0, "Expected exlib get_num() to be positive");
+
+DelayGenerator delayGenerator(2000);
 
 // Use the built-in led
 OutputPin ledPin(Board::LED);
@@ -19,6 +22,8 @@ void setup() {
     Watchdog::begin();
 
     Power::set(SLEEP_MODE_PWR_DOWN);
+    ManchesterCodec codec;
+    codec.encode4(4);
 }
 
 void loop() {
@@ -40,7 +45,7 @@ void loop() {
     Watchdog::begin(512);
 #endif
 
-    delay(get_delay());
+    delay(delayGenerator.get_delay());
 
 #ifdef USE_WATCHDOG_SHUTDOWN
     Watchdog::end();
