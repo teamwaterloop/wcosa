@@ -15,6 +15,15 @@ def linux_path(path):
     return path
 
 
+def get_wcosa_path():
+    """returns the absolute path of wcosa"""
+    return linux_path(os.path.abspath("./../../"))
+
+
+def get_working_directory():
+    return linux_path(os.getcwd())
+
+
 def fill_template(string, data):
     """Fills the template based on the data provided"""
 

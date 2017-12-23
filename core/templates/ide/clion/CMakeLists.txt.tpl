@@ -16,8 +16,14 @@ set(CMAKE_CXX_STANDARD {{cmake-cxx-standard}})
 {{add_definitions({{user-definition}})}}
 % end
 
+# add search paths for cosa core
+% cosa-search
+{{include_directories({{wcosa-core}})}}
+% end
+
 # add search paths for all the user libraries
 % lib-search
+
 {{include_directories({{lib-path}})}}
 % end
 
@@ -45,6 +51,6 @@ add_custom_target(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-file(GLOB RECURSE SRC_FILES "src/*.cpp", "src/*.cc", "src/*.c")
+file(GLOB_RECURSE SRC_FILES "src/*.cpp" "src/*.cc" "src/*.c")
 
-add_executable(${SRC_FILES})
+add_executable(${PROJECT_NAME} ${SRC_FILES})
