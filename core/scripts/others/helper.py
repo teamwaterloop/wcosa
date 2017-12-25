@@ -3,6 +3,7 @@ Helper functions to be used through the tool
 """
 
 import os
+import re
 import shutil
 
 
@@ -24,7 +25,7 @@ def fill_template(string, data):
         else:
             value = data[key]
 
-        string = string.replace("{{" + key + "}}", value)
+        string = re.sub("{.*" + key + ".*}", value, string)
 
     return string
 
@@ -32,11 +33,11 @@ def fill_template(string, data):
 def create_folder(path, override=False):
     """Creates a folder at the given path"""
 
-    if override is True:
+    if override:
         if os.path.exists(path):
             shutil.rmtree(path)
         os.mkdir(path)
-    elif os.path.exists(path) is False:
+    elif not os.path.exists(path):
         os.mkdir(path)
 
 

@@ -7,23 +7,23 @@ from colorama import init
 from colorama import Style
 
 
-class verboseScope:
+class VerboseScope:
     """holds the verbose flag"""
     verbose_flag = False
 
 
 init()
-scope = verboseScope()
+scope = VerboseScope()
 
 
 def set_verbose(status):
     """turns verbose flag on and off"""
-    verboseScope.verbose_flag = status
+    VerboseScope.verbose_flag = status
 
 
 def verbose(string, newline, color=Style.RESET_ALL):
     """if verbose option is one, then only write on the output"""
-    if verboseScope.verbose_flag is True:
+    if VerboseScope.verbose_flag is True:
         write(string, color)
 
         if newline is True:

@@ -30,8 +30,7 @@ def fill_internal_config(path, curr_path, ide, user_config_data):
 
     # get c and cxx flags
     board_properties = board_parser.get_board_properties(user_config_data["board"],
-                                                         internal_config_data[
-                                                             "wcosa-path"] + "/toolchain/cosa/boards.txt")
+                                                         internal_config_data["wcosa-path"] + "/core/boards.txt")
     internal_config_data["cmake-c-flags"] = platform_parser.get_c_compiler_flags(board_properties,
                                                                                  internal_config_data[
                                                                                      "wcosa-path"] +
@@ -45,7 +44,7 @@ def fill_internal_config(path, curr_path, ide, user_config_data):
                                                                                          "include-extra-flags"])
     internal_config_data["cmake-cxx-standard"] = settings_data["cmake-cxx-standard"]
     internal_config_data["custom-definitions"] = user_config_data
-    internal_config_data["custom-definitions"] = " -D" + board_properties["board-id"]  # board ID
+    internal_config_data["custom-definitions"] = " -D" + board_properties["id"]  # board ID
     internal_config_data["custom-definitions"] = internal_config_data["custom-definitions"].strip(" ")
     internal_config_data["cosa-libraries"] = user_config_data["cosa-libraries"]
 

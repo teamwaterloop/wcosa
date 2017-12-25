@@ -1,7 +1,4 @@
 .idea/
 .DS_Store
 cmake-build-debug/
-core/scripts/others/__pycache__/
-core/scripts/others/__pycache__/
-core/scripts/parsers/__pycache__/
-core/scripts/templates/__pycache__/
+__pycache__/
