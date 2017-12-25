@@ -2,12 +2,14 @@
 Handle handles creating and updating WCosa projects
 """
 
+import os
+
 from shutil import copyfile
 from colorama import Fore
-from core.scripts.others.output import write, writeln
-from core.scripts.others import helper
-import core.scripts.templates.config as config
-import core.scripts.templates.cmake as cmake
+from wcosa.others.output import write, writeln
+from wcosa.others import helper
+from wcosa.templates import config
+from wcosa.templates import cmake
 
 
 def create_wcosa(path, board, ide):
@@ -23,12 +25,25 @@ def create_wcosa(path, board, ide):
     else:
         ide = ide.strip(" ")
 
-    templates_path = helper.get_wcosa_path() + "/core/templates"
-    user_config_path = project_path + "/config.json"
-    internal_config_path = project_path + "/wcosa/internal-config.json"
-    general_cmake_path = project_path + "/wcosa/CMakeLists.txt"
+    templates_path = helper.linux_path(helper.get_wcosa_path() + "/templates")
+    user_config_path = helper.linux_path(project_path + "/config.json")
+    internal_config_path = helper.linux_path(project_path + "/wcosa/internal-config.json")
+    general_cmake_path = helper.linux_path(project_path + "/wcosa/CMakeLists.txt")
 
     write("Creating work environment - ", color=Fore.CYAN)
+
+    # check if path exists
+    if not os.path.exists(path) or not os.path.isdir(path):
+        writeln("aborted")
+        write("Path specified for project creation does not exist or is not a directory", color=Fore.RED)
+        quit(2)
+
+    # check if there are already files/directories in that folder
+    if len(helper.get_dirs(path)) > 0 or len(helper.get_files(path)) > 0:
+        writeln("aborted")
+        write("The directory should be empty where the project should be created. Use wcosa update instead",
+              color=Fore.RED)
+        quit(2)
 
     # create src, lib, and wcosa folders
     helper.create_folder(project_path + "/src", True)
@@ -43,6 +58,7 @@ def create_wcosa(path, board, ide):
 
     if ide == "clion":
         copyfile(templates_path + "/ide/clion/CMakeLists.txt.tpl", project_path + "/CMakeLists.txt")
+        copyfile(templates_path + "/ide/clion/CMakeListsPrivate.txt.tpl", project_path + "/CMakeListsPrivate.txt")
 
     writeln("done")
     write("Updating configurations based on the system - ", color=Fore.CYAN)
@@ -50,12 +66,11 @@ def create_wcosa(path, board, ide):
     user_data = config.fill_user_config(user_config_path, board, "None", ide)  # give a dummy port right now
     project_data = config.fill_internal_config(internal_config_path, path, user_data)
 
-    import core.scripts.templates.cmake as cmake
-
     cmake.parse_update(general_cmake_path, project_data)
 
     if ide != "":
         cmake.parse_update(project_path + "/CMakeLists.txt", project_data)
+        cmake.parse_update(project_path + "/CMakeListsPrivate.txt", project_data)
 
     writeln("done")
     writeln("Project Created and structure:", color=Fore.YELLOW)
@@ -74,7 +89,7 @@ def update_wcosa(path, board):
     if path is None:
         project_path = helper.get_working_directory()
 
-    templates_path = helper.get_wcosa_path() + "/core/templates"
+    templates_path = helper.get_wcosa_path() + "/templates"
     user_config_path = project_path + "/config.json"
     internal_config_path = project_path + "/wcosa/internal-config.json"
     general_cmake_path = project_path + "/wcosa/CMakeLists.txt"
