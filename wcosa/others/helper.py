@@ -40,10 +40,25 @@ def get_working_directory():
 
 def get_wcosa_path():
     """returns the absolute path of wcosa"""
-    return linux_path(os.path.abspath("./../../"))
+
+    return linux_path(os.path.abspath(sys.path[0] + "/.."))
+
+
+def get_cosa_path():
+    """returns the absolute path of cosa"""
+
+    return linux_path(get_wcosa_path() + "/toolchain/cosa")
+
+
+def get_settings_path():
+    """returns the absolute path of settings file"""
+
+    return linux_path(get_wcosa_path() + "/wcosa/settings.json")
 
 
 def get_working_directory():
+    """get path from where the script is called"""
+
     return linux_path(os.getcwd())
 
 
