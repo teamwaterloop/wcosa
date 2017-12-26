@@ -5,8 +5,8 @@ Parses and completes the config templates
 import json
 import os
 
-from wcosa.parsers import platform_parser, board_parser
-from wcosa.others import helper
+from parsers import platform_parser, board_parser
+from others import helper
 
 
 def fill_internal_config(path, curr_path, user_config_data):
@@ -59,7 +59,8 @@ def fill_user_config(path, board, port, ide=""):
     with open(helper.get_settings_path()) as f:
         settings_data = json.load(f)
 
-    user_config_data["board"] = board
+    if board is not None:
+        user_config_data["board"] = board
 
     if ide != "":
         user_config_data["ide"] = ide
