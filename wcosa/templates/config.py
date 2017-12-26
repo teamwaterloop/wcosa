@@ -6,7 +6,7 @@ import json
 import os
 
 from parsers import platform_parser, board_parser
-from others import helper
+from utils import helper
 
 
 def fill_internal_config(path, curr_path, user_config_data):

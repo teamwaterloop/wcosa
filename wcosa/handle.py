@@ -6,8 +6,8 @@ import os
 
 from shutil import copyfile
 from colorama import Fore
-from others.output import write, writeln
-from others import helper
+from utils.output import write, writeln
+from utils import helper
 from templates import config
 from templates import cmake
 
@@ -121,7 +121,3 @@ def update_wcosa(path, board):
         cmake.parse_update(project_path + "/CMakeLists.txt", project_data)
 
     writeln("done")
-
-
-if __name__ == "__main__":
-    print("hello")
