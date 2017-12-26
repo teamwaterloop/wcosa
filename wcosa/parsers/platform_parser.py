@@ -4,7 +4,7 @@ Parses the platform.txt file and gathers information about the current platform
 
 import json
 
-from wcosa.others import helper
+from others import helper
 
 
 def get_raw_flags(lines, identifier, include_extra):

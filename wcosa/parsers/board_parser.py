@@ -4,7 +4,7 @@ Parses the boards.txt file and gathers information about the current board
 
 import json
 
-from wcosa.others import helper
+from others import helper
 
 
 def create_boards_tree(board_file_path, new_board_path):
@@ -20,6 +20,7 @@ def create_boards_tree(board_file_path, new_board_path):
         if "name=" in line:
             curr_board = line[:line.find(".")]
             tree[curr_board] = {}
+            tree[curr_board]["name"] = line[line.find('='):].strip("=").strip("\n").strip(" ")
         elif "mcu=" in line:
             tree[curr_board]["mcu"] = line[line.find('='):].strip("=").strip("\n").strip(" ")
         elif "f_cpu=" in line:
@@ -27,7 +28,7 @@ def create_boards_tree(board_file_path, new_board_path):
         elif "board=" in line:
             tree[curr_board]["id"] = line[line.find('='):].strip("=").strip("\n").strip(" ")
 
-    with open(helper.linux_path(new_board_path)) as f:
+    with open(helper.linux_path(new_board_path), "w") as f:
         json.dump(tree, f, indent=4)
 
 
