@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 setup(name='WCosa',
-      version='0.1.dev0',
+      version='0.1.dev1',
       description='Create, Build, Upload and Monitor AVR Cosa Projects',
       author='Deep Dhillon, Jeff Niu, Ambareesh Balaji',
       author_email='deep.dhill6@gmail.com, jeffniu22@gmail.com, ambareeshbalaji@gmail.com',
@@ -11,7 +11,7 @@ setup(name='WCosa',
       license='MIT',
       packages=find_packages(),
       install_requires=[
-          'colorama',
+          'colorama', 'serial'
       ],
       classifiers=[
           'Development Status :: 4 -Beta',

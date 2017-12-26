@@ -3,6 +3,7 @@ Parses the boards.txt file and gathers information about the current board
 """
 
 import json
+from collections import OrderedDict
 
 from utils import helper
 
@@ -36,7 +37,7 @@ def get_board_properties(board, board_path):
     """parses the board file returns the properties of the board specified"""
 
     with open(helper.linux_path(board_path)) as f:
-        board_data = json.load(f)
+        board_data = json.load(f, object_pairs_hook=OrderedDict)
 
     return board_data[board]
 
@@ -45,7 +46,7 @@ def get_all_board(board_path):
     """parses the board file returns the properties of the board specified"""
 
     with open(helper.linux_path(board_path)) as f:
-        board_data = json.load(f)
+        board_data = json.load(f, object_pairs_hook=OrderedDict)
 
     keys = []
 
