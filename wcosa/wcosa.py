@@ -2,7 +2,7 @@ import argparse
 import handle
 from colorama import Fore
 from parsers import board_parser
-from others import output, helper
+from utils import output, helper
 
 
 def parse():
