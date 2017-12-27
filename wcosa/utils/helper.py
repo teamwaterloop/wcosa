@@ -3,9 +3,9 @@ Helper functions to be used through the tool
 """
 
 import os
-import sys
 import re
 import shutil
+import sys
 
 
 def linux_path(path):
@@ -17,7 +17,7 @@ def linux_path(path):
 def get_wcosa_path():
     """returns the absolute path of wcosa"""
 
-    return linux_path(os.path.abspath(sys.path[0] + "/.."))
+    return linux_path(os.path.abspath(os.path.abspath(os.path.dirname(sys.argv[0])) + "/../"))
 
 
 def get_cosa_path():
@@ -35,7 +35,7 @@ def get_settings_path():
 def get_working_directory():
     """get path from where the script is called"""
 
-    return linux_path(os.getcwd())
+    return linux_path(os.path.abspath(os.getcwd()))
 
 
 def fill_template(string, data):
