@@ -7,25 +7,19 @@ import json
 import os
 import shutil
 import subprocess
-from collections import OrderedDict
+
 from sys import platform
+from collections import OrderedDict
+
+import serial.tools.list_ports
 
 import handle
-import serial.tools.list_ports
+
 from objects import settings
 from objects.objects import *
+from utils.finder import *
 
-
-def cmd_exists(cmd):
-    """checks if the program exists in the PATH"""
-
-    return any(
-        os.access(os.path.join(path, cmd), os.X_OK)
-        for path in os.environ["PATH"].split(os.pathsep)
-    )
-
-
-def build_wcosa(path, generator):
+def build_wcosa(path, generator, make=None, cmake=None):
     """build wcosa project, cmake and make"""
 
     path = str(path)
@@ -47,44 +41,40 @@ def build_wcosa(path, generator):
 
     output.writeln("done")
 
-    cmake_program = "cmake.exe"
-    make_program = "make.exe"
+    cmake_program = cmake or get_cmake_program()
+    make_program = make or get_make_program()
 
     output.write("Verifying cmake and make installs - ", Fore.GREEN)
 
-    # rename the programs for linux and unix systems
-    if platform == "linux" or platform == "linux2" or platform == "darwin":
-        cmake_program = "cmake"
-        make_program = "make"
-
     # check if cmake is in environment paths (unix/linux based systems)
-    if not cmd_exists(cmake_program):
-        output.writeln("\ncmake does not exist, please install it or make sure it is in your environment PATH",
-                       Fore.RED)
+    if not cmake_program:
+        output.writeln(
+            "\ncmake does not exist, please install it or make sure it is in your environment PATH",
+            Fore.RED)
         quit(2)
 
     # check if make is in environment paths (unix/linux based systems)
-    if not cmd_exists(make_program):
-        output.writeln("\nmake does not exist, please install it or make sure it is in your environment PATH",
-                       Fore.RED)
+    if not make_program:
+        output.writeln(
+            "\nmake does not exist, please install it or make sure it is in your environment PATH",
+            Fore.RED)
         quit(2)
 
     output.writeln("done")
 
+    if not str(generator):
+        generator = Generator(get_generator_for(make_program))
+
     # check if path is valid and get build information from the user config
     if not os.path.exists(path + "/config.json"):
-        output.write("Project user configuration file does not exist, recreate or update the project", Fore.RED)
+        output.write(
+            "Project user configuration file does not exist, recreate or update the project",
+            Fore.RED)
         quit(2)
-        board = None
-        user_generator = None
     else:
         with open(path + "/config.json") as f:
             data = json.load(f, object_pairs_hook=OrderedDict)
             board = data["board"]
-            user_generator = data["generator"]
-
-    if generator.use_same() and user_generator is not None and user_generator != "":
-        generator = Generator(user_generator)
 
     # check if the current build files are for the current board
     # clean and build if boards are different
@@ -103,7 +93,7 @@ def build_wcosa(path, generator):
         output.writeln("Project build unsuccessful, cmake exited with error code " + str(cmake_code), Fore.RED)
         quit(2)
 
-    make_code = subprocess.call(["make"])
+    make_code = subprocess.call([make_program])
 
     if make_code != 0:
         output.writeln("Project build unsuccessful, make exited with error code " + str(make_code), Fore.RED)
@@ -134,12 +124,14 @@ def serial_ports():
         quit(2)
 
     for p in ports:
-        if "Arduino".lower() in str(p.description).lower() or "Arduino" in str(p.manufacturer).lower():
+        test_str = str(p.description).lower()
+        if "arduino" in test_str or "Arduino" in test_str:
             return p.device
 
     # if no arduino port is found choose the first port
-    output.writeln("No Arduino port found, choosing the first available one. Specify the port if you want another port",
-                   Fore.YELLOW)
+    output.writeln(
+        "No Arduino port found, choosing the first available one. Specify the port if you want another port",
+        Fore.YELLOW)
 
     return ports[0].device
 
@@ -211,7 +203,7 @@ def upload_wcosa(path, port):
 
     output.writeln("Upload triggered on " + str(port), Fore.GREEN)
 
-    upload_code = subprocess.call(["make", "upload"])
+    upload_code = subprocess.call([get_make_program(), "upload"])
 
     if upload_code != 0:
         output.writeln("Project upload unsuccessful, make exited with error code " + str(upload_code), Fore.RED)

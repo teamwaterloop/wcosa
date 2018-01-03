@@ -14,19 +14,41 @@ def parse():
 
     parser = argparse.ArgumentParser(description="WCosa create, build and upload Cosa AVR projects")
 
-    parser.add_argument('action', help='action to perform (create, update, build, upload, serial and boards')
-    parser.add_argument('--board', help='board to use for wcosa project',
-                        type=str)
-    parser.add_argument('--port', help='port to upload the AVR traget to (default: automatic)',
-                        type=str)
-    parser.add_argument('--baud', help='buad rate for serial (default: 9600)',
-                        type=int)
-    parser.add_argument('--ide', help='create specific project structure for specific ide (default: none)',
-                        type=str)
-    parser.add_argument('--path', help='path to create the project at (default: curr dir)',
-                        type=str)
-    parser.add_argument('--generator', help='makefile generator to use for build (default: Unix Makefiles)',
-                        type=str)
+    parser.add_argument(
+        'action',
+        help='action to perform (create, update, build, upload, serial and boards')
+    parser.add_argument(
+        '--board',
+         help='board to use for wcosa project',
+        type=str)
+    parser.add_argument(
+        '--port',
+        help='port to upload the AVR traget to (default: automatic)',
+        type=str)
+    parser.add_argument(
+        '--baud',
+        help='buad rate for serial (default: 9600)',
+        type=int)
+    parser.add_argument(
+        '--ide',
+        help='create specific project structure for specific ide (default: none)',
+        type=str)
+    parser.add_argument(
+        '--path',
+        help='path to create the project at (default: curr dir)',
+        type=str)
+    parser.add_argument(
+        '--generator',
+        help='makefile generator to use for build (default: Unix Makefiles)',
+        type=str)
+    parser.add_argument(
+        '--make',
+        help='path to make binary',
+        type=str)
+    parser.add_argument(
+        '--cmake',
+        help='path to cmake binary',
+        type=str)
 
     return parser.parse_args()
 
@@ -58,6 +80,8 @@ if __name__ == "__main__":
     port = Port(options.port)
     path = Path(options.path)
     generator = Generator(options.generator)
+    cmake = options.cmake
+    make = options.make
 
     # based on the action call scripts
     if options.action == "boards":
@@ -79,7 +103,7 @@ if __name__ == "__main__":
         if provided(options.port, options.ide, options.board, options.baud):
             output.writeln("Build only requires path and generator, other flags are ignored", Fore.YELLOW)
 
-        use.build_wcosa(path, generator)
+        use.build_wcosa(path, generator, make, cmake)
     elif options.action == "upload":
         if provided(options.ide, options.board, options.generator, options.baud):
             output.writeln("Upload only requires path and port, other flags are ignored", Fore.YELLOW)

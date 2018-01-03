@@ -34,7 +34,7 @@ class Board:
         return self.same
 
     def __str__(self):
-        return self.name
+        return self.name or ""
 
 
 class IDE:
@@ -49,7 +49,7 @@ class IDE:
             self.same = False
 
     def __str__(self):
-        return self.name
+        return self.name or ""
 
     def use_same(self):
         """Returns true if the value of ide stayed same (None is provided)"""
@@ -81,7 +81,7 @@ class Port:
             quit(2)
 
     def __str__(self):
-        return self.name
+        return self.name or ""
 
     def use_same(self):
         """Returns true if the value of port stayed same (None is provided)"""
@@ -106,15 +106,15 @@ class Generator:
     """Wrapper for the generator flag"""
 
     def __init__(self, name):
-        if name is None:
-            self.name = "Unix Makefiles"  # default generator
+        if not name:
+            self.name = None
             self.same = True
         else:
             self.name = name
             self.same = False
 
     def __str__(self):
-        return self.name
+        return self.name or ""
 
     def use_same(self):
         """Returns true if the value of generator stayed same (None is provided)"""

@@ -26,20 +26,17 @@ def fill_internal_config(path, curr_path, user_config_data):
     internal_config_data["cmake-version"] = settings.get_settings_value("cmake-version")
 
     # get c and cxx flags
-    board_properties = board_parser.get_board_properties(user_config_data["board"],
-                                                         internal_config_data["wcosa-path"] + "/wcosa/boards.json")
-    internal_config_data["cmake-c-flags"] = platform_parser.get_c_compiler_flags(board_properties,
-                                                                                 internal_config_data[
-                                                                                     "wcosa-path"] +
-                                                                                 "/toolchain/cosa/platform.txt",
-                                                                                 settings.get_settings_value(
-                                                                                     "include-extra-flags"))
-    internal_config_data["cmake-cxx-flags"] = platform_parser.get_cxx_compiler_flags(board_properties,
-                                                                                     internal_config_data[
-                                                                                         "wcosa-path"] +
-                                                                                     "/toolchain/cosa/platform.txt",
-                                                                                     settings.get_settings_value(
-                                                                                         "include-extra-flags"))
+    board_properties = board_parser.get_board_properties(
+        user_config_data["board"],
+        internal_config_data["wcosa-path"] + "/wcosa/boards.json")
+    internal_config_data["cmake-c-flags"] = platform_parser.get_c_compiler_flags(
+        board_properties,
+        internal_config_data["wcosa-path"] + "/toolchain/cosa/platform.txt",
+        settings.get_settings_value("include-extra-flags"))
+    internal_config_data["cmake-cxx-flags"] = platform_parser.get_cxx_compiler_flags(
+        board_properties,
+        internal_config_data["wcosa-path"] + "/toolchain/cosa/platform.txt",
+        settings.get_settings_value("include-extra-flags"))
     internal_config_data["cmake-cxx-standard"] = settings.get_settings_value("cmake-cxx-standard")
     internal_config_data["custom-definitions"] = user_config_data["build-flags"]
     internal_config_data["cosa-libraries"] = user_config_data["cosa-libraries"]
