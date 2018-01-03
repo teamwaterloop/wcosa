@@ -72,7 +72,7 @@ def provided(*args):
         return True
 
 
-if __name__ == "__main__":
+def main():
     options = parse()
 
     board = Board(options.board)
@@ -114,3 +114,6 @@ if __name__ == "__main__":
             output.writeln("Clean only requires path, other flags are ignored", Fore.YELLOW)
 
         use.clean_wcosa(path)
+
+if __name__ == "__main__":
+    main()
