@@ -1,19 +1,14 @@
 dist: trusty
 language: python
-env:
-  matrix:
-    - TOX_ENV=flake8
-    - TOX_ENV=py27
-    - TOX_ENV=py34
 before_install:
   - sudo apt-get update -qq
 install:
   - sudo apt-get install -qq gcc-avr binutils-avr avr-libc avrdude -y
   - pip install --upgrade pip
-  - pip install tox tox-travis
+  - pip install tox
   - pip install --upgrade flake8
 script:
-  - tox -e $TOX_ENV
+  - tox
   - cd toolchain
   - mkdir cmake-build-debug
   - cd cmake-build-debug
