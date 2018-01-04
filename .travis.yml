@@ -1,9 +1,10 @@
-dist: trusty
+dist: xenial
 language: cpp
 before_install:
   - sudo apt-get update -qq
 install:
   - sudo apt-get install -qq gcc-avr binutils-avr avr-libc avrdude -y
+  - sudo apt-get install tox
 script:
   - tox
   - cd toolchain
