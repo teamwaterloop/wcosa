@@ -22,6 +22,7 @@ setup(
             'templates/*/*.tpl',
             'templates/*/*/*.tpl',
             'templates/*/*',
+            'wcosa/settings.json',
         ],
     },
     entry_points={
