@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 install_requires = [
-    "colorama",
-    "pyserial>=3,<4",
+    'colorama',
+    'pyserial>=3,<4',
 ]
 
 setup(
@@ -22,12 +22,12 @@ setup(
             'templates/*/*.tpl',
             'templates/*/*/*.tpl',
             'templates/*/*',
-        ]
+        ],
     },
     entry_points={
         'console_scripts': [
-            'wcosa = wcosa.wcosa:main'
-        ]
+            'wcosa = wcosa.wcosa:main',
+        ],
     },
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -36,5 +36,5 @@ setup(
     keywords=[
         'iot', 'embedded', 'arduino', 'avr', 'fpga', 'firmware',
         'hardware', 'microcontroller', 'debug', 'cosa', 'tool',
-    ])
-
+    ],
+)

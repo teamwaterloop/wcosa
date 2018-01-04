@@ -1,0 +1,87 @@
+actionid: tox
+msg: packaging
+cmdargs: ['/usr/bin/python3', local('/home/jeffniu22/Code/wcosa/setup.py'), 'sdist', '--formats=zip', '--dist-dir', local('/home/jeffniu22/Code/wcosa/.tox/dist')]
+env: None
+
+running sdist
+running egg_info
+writing WCosa.egg-info/PKG-INFO
+writing requirements to WCosa.egg-info/requires.txt
+writing entry points to WCosa.egg-info/entry_points.txt
+writing top-level names to WCosa.egg-info/top_level.txt
+writing dependency_links to WCosa.egg-info/dependency_links.txt
+reading manifest file 'WCosa.egg-info/SOURCES.txt'
+writing manifest file 'WCosa.egg-info/SOURCES.txt'
+warning: sdist: standard file not found: should have one of README, README.rst, README.txt
+
+running check
+warning: check: missing required meta-data: url
+
+creating WCosa-0.1.0
+creating WCosa-0.1.0/WCosa.egg-info
+creating WCosa-0.1.0/wcosa
+creating WCosa-0.1.0/wcosa/command
+creating WCosa-0.1.0/wcosa/objects
+creating WCosa-0.1.0/wcosa/parsers
+creating WCosa-0.1.0/wcosa/templates
+creating WCosa-0.1.0/wcosa/utils
+making hard links in WCosa-0.1.0...
+hard linking README.md -> WCosa-0.1.0
+hard linking setup.py -> WCosa-0.1.0
+hard linking WCosa.egg-info/PKG-INFO -> WCosa-0.1.0/WCosa.egg-info
+hard linking WCosa.egg-info/SOURCES.txt -> WCosa-0.1.0/WCosa.egg-info
+hard linking WCosa.egg-info/dependency_links.txt -> WCosa-0.1.0/WCosa.egg-info
+hard linking WCosa.egg-info/entry_points.txt -> WCosa-0.1.0/WCosa.egg-info
+hard linking WCosa.egg-info/requires.txt -> WCosa-0.1.0/WCosa.egg-info
+hard linking WCosa.egg-info/top_level.txt -> WCosa-0.1.0/WCosa.egg-info
+hard linking wcosa/__init__.py -> WCosa-0.1.0/wcosa
+hard linking wcosa/wcosa.py -> WCosa-0.1.0/wcosa
+hard linking wcosa/command/__init__.py -> WCosa-0.1.0/wcosa/command
+hard linking wcosa/command/handle.py -> WCosa-0.1.0/wcosa/command
+hard linking wcosa/command/use.py -> WCosa-0.1.0/wcosa/command
+hard linking wcosa/objects/__init__.py -> WCosa-0.1.0/wcosa/objects
+hard linking wcosa/objects/objects.py -> WCosa-0.1.0/wcosa/objects
+hard linking wcosa/objects/settings.py -> WCosa-0.1.0/wcosa/objects
+hard linking wcosa/parsers/__init__.py -> WCosa-0.1.0/wcosa/parsers
+hard linking wcosa/parsers/board_parser.py -> WCosa-0.1.0/wcosa/parsers
+hard linking wcosa/parsers/platform_parser.py -> WCosa-0.1.0/wcosa/parsers
+hard linking wcosa/templates/__init__.py -> WCosa-0.1.0/wcosa/templates
+hard linking wcosa/templates/cmake.py -> WCosa-0.1.0/wcosa/templates
+hard linking wcosa/templates/config.py -> WCosa-0.1.0/wcosa/templates
+hard linking wcosa/utils/__init__.py -> WCosa-0.1.0/wcosa/utils
+hard linking wcosa/utils/finder.py -> WCosa-0.1.0/wcosa/utils
+hard linking wcosa/utils/helper.py -> WCosa-0.1.0/wcosa/utils
+hard linking wcosa/utils/memoize.py -> WCosa-0.1.0/wcosa/utils
+hard linking wcosa/utils/output.py -> WCosa-0.1.0/wcosa/utils
+Writing WCosa-0.1.0/setup.cfg
+creating '.tox/dist/WCosa-0.1.0.zip' and adding 'WCosa-0.1.0' to it
+adding 'WCosa-0.1.0/setup.cfg'
+adding 'WCosa-0.1.0/setup.py'
+adding 'WCosa-0.1.0/PKG-INFO'
+adding 'WCosa-0.1.0/README.md'
+adding 'WCosa-0.1.0/wcosa/__init__.py'
+adding 'WCosa-0.1.0/wcosa/wcosa.py'
+adding 'WCosa-0.1.0/wcosa/objects/objects.py'
+adding 'WCosa-0.1.0/wcosa/objects/__init__.py'
+adding 'WCosa-0.1.0/wcosa/objects/settings.py'
+adding 'WCosa-0.1.0/wcosa/utils/memoize.py'
+adding 'WCosa-0.1.0/wcosa/utils/finder.py'
+adding 'WCosa-0.1.0/wcosa/utils/helper.py'
+adding 'WCosa-0.1.0/wcosa/utils/output.py'
+adding 'WCosa-0.1.0/wcosa/utils/__init__.py'
+adding 'WCosa-0.1.0/wcosa/templates/__init__.py'
+adding 'WCosa-0.1.0/wcosa/templates/cmake.py'
+adding 'WCosa-0.1.0/wcosa/templates/config.py'
+adding 'WCosa-0.1.0/wcosa/parsers/__init__.py'
+adding 'WCosa-0.1.0/wcosa/parsers/platform_parser.py'
+adding 'WCosa-0.1.0/wcosa/parsers/board_parser.py'
+adding 'WCosa-0.1.0/wcosa/command/use.py'
+adding 'WCosa-0.1.0/wcosa/command/handle.py'
+adding 'WCosa-0.1.0/wcosa/command/__init__.py'
+adding 'WCosa-0.1.0/WCosa.egg-info/PKG-INFO'
+adding 'WCosa-0.1.0/WCosa.egg-info/requires.txt'
+adding 'WCosa-0.1.0/WCosa.egg-info/top_level.txt'
+adding 'WCosa-0.1.0/WCosa.egg-info/entry_points.txt'
+adding 'WCosa-0.1.0/WCosa.egg-info/dependency_links.txt'
+adding 'WCosa-0.1.0/WCosa.egg-info/SOURCES.txt'
+removing 'WCosa-0.1.0' (and everything under it)
