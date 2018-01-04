@@ -7,6 +7,8 @@ import re
 import shutil
 import sys
 
+from os.path import dirname, abspath
+
 
 def linux_path(path):
     """Converts Windows style path to linux style path"""
@@ -17,7 +19,8 @@ def linux_path(path):
 def get_wcosa_path():
     """returns the absolute path of wcosa"""
 
-    return linux_path(os.path.abspath(os.path.abspath(os.path.dirname(sys.argv[0])) + "/../"))
+    wcosa_path = dirname(abspath(__file__))
+    return linux_path(dirname(dirname(wcosa_path)))
 
 
 def get_cosa_path():
