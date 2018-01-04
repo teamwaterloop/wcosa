@@ -1,4 +1,4 @@
-dist: xenial
+dist: trusty
 language: cpp
 before_install:
   - sudo apt-get update -qq
