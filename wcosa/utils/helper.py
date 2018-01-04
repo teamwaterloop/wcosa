@@ -5,7 +5,6 @@ Helper functions to be used through the tool
 import os
 import re
 import shutil
-import sys
 
 from os.path import dirname, abspath
 

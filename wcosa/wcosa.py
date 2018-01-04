@@ -8,7 +8,9 @@ import argparse
 
 from wcosa.command import handle
 from wcosa.command import use
-from wcosa.objects.objects import *
+from wcosa.parser import board_parser
+from wcosa.objects.objects import Board, Fore, Generator, IDE, Path, Port
+from wcosa.utils import helper, output
 
 
 def parse():
@@ -21,7 +23,7 @@ def parse():
         help='action to perform (create, update, build, upload, serial and boards')
     parser.add_argument(
         '--board',
-         help='board to use for wcosa project',
+        help='board to use for wcosa project',
         type=str)
     parser.add_argument(
         '--port',

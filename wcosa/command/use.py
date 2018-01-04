@@ -8,7 +8,6 @@ import os
 import shutil
 import subprocess
 
-from sys import platform
 from collections import OrderedDict
 
 import serial.tools.list_ports
@@ -16,8 +15,10 @@ import serial.tools.list_ports
 import wcosa.command.handle as handle
 
 from wcosa.objects import settings
-from wcosa.objects.objects import *
-from wcosa.utils.finder import *
+from wcosa.objects.objects import Board, Fore, Generator, IDE, Path
+from wcosa.utils.finder import get_cmake_program, get_make_program, get_generator_for
+from wcosa.utils import helper, output
+
 
 def build_wcosa(path, generator, make=None, cmake=None):
     """build wcosa project, cmake and make"""
@@ -238,4 +239,3 @@ def clean_wcosa(path):
         output.writeln("Error while cleaning build files", Fore.RED)
 
     output.writeln("done")
-
