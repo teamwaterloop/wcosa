@@ -40,6 +40,7 @@ def create_wcosa(path, board, ide):
     user_config_path = helper.linux_path(path + '/config.json')
     internal_config_path = helper.linux_path(path + '/wcosa/internal-config.json')
     general_cmake_path = helper.linux_path(path + '/wcosa/CMakeLists.txt')
+    src_path = helper.linux_path(path + '/src/main.cpp')
 
     # check if there are already src and lib folders. We do not want to delete those folders
     if len(helper.get_dirs(path)) > 0 and (os.path.exists(path + '/src') or os.path.exists(path + '/lib')):
@@ -54,6 +55,7 @@ def create_wcosa(path, board, ide):
     copyfile(templates_path + '/cmake/CMakeLists.txt.tpl', general_cmake_path)
     copyfile(templates_path + '/config/internal-config.json.tpl', internal_config_path)
     copyfile(templates_path + '/config/config.json.tpl', user_config_path)
+    copyfile(templates_path + '/examples/main.cpp', src_path)
 
     writeln('done')
     write('Updating configurations based on the system - ', color=Fore.CYAN)

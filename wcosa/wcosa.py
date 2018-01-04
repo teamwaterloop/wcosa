@@ -9,7 +9,7 @@ import argparse
 from wcosa.command import handle
 from wcosa.command import use
 from wcosa.objects.objects import Board, Fore, Generator, IDE, Path, Port
-from wcosa.parser import board_parser
+from wcosa.parsers import board_parser
 from wcosa.utils import helper, output
 
 
