@@ -4,7 +4,9 @@ before_install:
   - sudo apt-get update -qq
 install:
   - sudo apt-get install -qq gcc-avr binutils-avr avr-libc avrdude -y
-  - sudo apt-get install tox
+  - pip install --upgrade pip
+  - pip install tox tox-travis
+  - pip install --upgrade flake8
 script:
   - tox
   - cd toolchain
