@@ -36,7 +36,7 @@ def create_wcosa(path, board, ide):
     write('Creating work environment - ', color=Fore.CYAN)
     verify_path(path)
 
-    templates_path = helper.linux_path(helper.get_wcosa_path() + '/templates')
+    templates_path = helper.linux_path(helper.get_wcosa_path() + '/wcosa/templates')
     user_config_path = helper.linux_path(path + '/config.json')
     internal_config_path = helper.linux_path(path + '/wcosa/internal-config.json')
     general_cmake_path = helper.linux_path(path + '/wcosa/CMakeLists.txt')
@@ -90,7 +90,7 @@ def update_wcosa(path, board, ide):
     write('Updating work environment - ', color=Fore.CYAN)
     verify_path(path)
 
-    templates_path = helper.get_wcosa_path() + '/templates'
+    templates_path = helper.linux_path(helper.get_wcosa_path() + '/wcosa/templates')
     user_config_path = path + '/config.json'
     internal_config_path = path + '/wcosa/internal-config.json'
     general_cmake_path = path + '/wcosa/CMakeLists.txt'
