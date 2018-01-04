@@ -13,7 +13,7 @@ from collections import OrderedDict
 
 import serial.tools.list_ports
 
-import wcosa.handle as handle
+import wcosa.command.handle as handle
 
 from wcosa.objects import settings
 from wcosa.objects.objects import *
@@ -237,4 +237,5 @@ def clean_wcosa(path):
     except IOError:
         output.writeln("Error while cleaning build files", Fore.RED)
 
-    output.writeln("done", Fore.GREEN)
+    output.writeln("done")
+

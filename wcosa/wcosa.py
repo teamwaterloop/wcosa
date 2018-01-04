@@ -2,10 +2,12 @@
 Main Script that calls other scripts to make wcosa work
 """
 
+from __future__ import absolute_import
+
 import argparse
 
-import wcosa.handle as handle
-import wcosa.use as use
+from wcosa.command import handle
+from wcosa.command import use
 from wcosa.objects.objects import *
 
 

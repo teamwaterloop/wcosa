@@ -127,3 +127,4 @@ def update_wcosa(path, board, ide):
         copyfile(templates_path + "/gitignore-files/.gitignore-general", path + "/.gitignore")
 
     writeln("done")
+
