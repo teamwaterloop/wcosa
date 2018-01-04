@@ -4,9 +4,9 @@ Main Script that calls other scripts to make wcosa work
 
 import argparse
 
-import handle
-import use
-from objects.objects import *
+import wcosa.handle as handle
+import wcosa.use as use
+from wcosa.objects.objects import *
 
 
 def parse():

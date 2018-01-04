@@ -13,11 +13,11 @@ from collections import OrderedDict
 
 import serial.tools.list_ports
 
-import handle
+import wcosa.handle as handle
 
-from objects import settings
-from objects.objects import *
-from utils.finder import *
+from wcosa.objects import settings
+from wcosa.objects.objects import *
+from wcosa.utils.finder import *
 
 def build_wcosa(path, generator, make=None, cmake=None):
     """build wcosa project, cmake and make"""
