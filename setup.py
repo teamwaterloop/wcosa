@@ -16,15 +16,9 @@ setup(
     long_description=open('README.md').read(),
     license='MIT',
     packages=find_packages(),
+    setup_requires=["setuptools_git >= 0.3"],
     install_requires=install_requires,
-    package_data={
-        'wcosa': [
-            'templates/*/*.tpl',
-            'templates/*/*/*.tpl',
-            'templates/*/*',
-            '*.json',
-        ],
-    },
+    include_package_data=True,
     entry_points={
         'console_scripts': [
             'wcosa = wcosa.wcosa:main',

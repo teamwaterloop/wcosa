@@ -7,4 +7,5 @@ WCosa.egg-info/
 .tox/
 build/
 dist/
+.eggs/
 
