@@ -1,11 +1,19 @@
 #!/usr/bin/env python
 
 from setuptools import find_packages, setup
+import os
 
 install_requires = [
     'colorama',
     'pyserial>=3,<4',
 ]
+
+def package_files(directory):
+    paths = []
+    for (path, directories, filenames) in os.walk(directory):
+        for filename in filenames:
+            paths.append(os.path.join('..', path, filename))
+    return paths
 
 setup(
     name='WCosa',
@@ -18,7 +26,9 @@ setup(
     packages=find_packages(),
     setup_requires=["setuptools_git >= 0.3"],
     install_requires=install_requires,
-    include_package_data=True,
+    package_data={
+        '': package_files('toolchain'),
+    }
     entry_points={
         'console_scripts': [
             'wcosa = wcosa.wcosa:main',
