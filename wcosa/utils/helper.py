@@ -24,7 +24,7 @@ def get_wcosa_path():
 def get_cosa_path():
     """returns the absolute path of cosa"""
 
-    return linux_path(get_wcosa_path() + '/wcosa/toolchain/cosa')
+    return linux_path(get_wcosa_path() + '/toolchain/cosa')
 
 
 def get_settings_path():

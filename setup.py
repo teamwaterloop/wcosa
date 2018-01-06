@@ -24,11 +24,11 @@ setup(
     long_description=open('README.md').read(),
     license='MIT',
     packages=find_packages(),
-    setup_requires=["setuptools_git >= 0.3"],
     install_requires=install_requires,
     package_data={
-        '': package_files('toolchain'),
-    }
+        '': package_files('toolchain') + package_files('templates'),
+        'wcosa': ['*.json'],
+    },
     entry_points={
         'console_scripts': [
             'wcosa = wcosa.wcosa:main',
