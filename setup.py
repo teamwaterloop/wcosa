@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
-from setuptools import find_packages, setup
 import os
+
+from setuptools import find_packages, setup
 
 install_requires = [
     'colorama',
     'pyserial>=3,<4',
 ]
+
 
 def package_files(directory):
     paths = []
@@ -14,6 +16,7 @@ def package_files(directory):
         for filename in filenames:
             paths.append(os.path.join('..', path, filename))
     return paths
+
 
 setup(
     name='WCosa',
