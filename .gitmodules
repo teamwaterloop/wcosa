@@ -1,0 +1,6 @@
+[submodule "wcosa/toolchain/arduino-cmake"]
+	path = wcosa/toolchain/arduino-cmake
+	url = https://github.com/arduino-cmake/arduino-cmake
+[submodule "wcosa/toolchain/cosa"]
+	path = wcosa/toolchain/cosa
+	url = https://github.com/teamwaterloop/Cosa.git
