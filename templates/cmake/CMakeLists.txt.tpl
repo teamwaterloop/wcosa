@@ -3,7 +3,7 @@ set(VER {{cmake-version}})
 set(NAME {{project-name}})
 
 # Cosa Toolchain
-set(CMAKE_TOOLCHAIN_FILE "${WCOSA_PATH}/wcosa/toolchain/cmake/CosaToolchain.cmake")
+set(CMAKE_TOOLCHAIN_FILE "${WCOSA_PATH}/toolchain/cmake/CosaToolchain.cmake")
 
 cmake_minimum_required(VERSION ${VER})
 
