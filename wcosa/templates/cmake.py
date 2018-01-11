@@ -5,6 +5,12 @@ Parses and completes the cmake templates
 import os
 
 from wcosa.utils import helper
+from wcosa.utils.helper import (
+    get_dirnames,
+    get_dirs,
+    get_files_recursively,
+    quote_join
+)
 
 DEF_SEARCH_TAG = '% def-search'
 LIB_SEARCH_TAG = '% lib-search'
@@ -23,7 +29,7 @@ def lib_search(content, project_data):
     """searches for library paths and then completes the templates to include search paths and build library"""
 
     str_to_return = ''
-    for lib in helper.get_dirs(project_data['current-path'] + '/lib'):
+    for lib in get_dirs(project_data['current-path'] + '/lib'):
         src_files = []
         hdr_files = []
         lib_paths = lib
@@ -32,30 +38,30 @@ def lib_search(content, project_data):
         src_found = False
 
         # handle src folder
-        for sub_dir in helper.get_dirs(lib):
+        for sub_dir in get_dirs(lib):
             if os.path.basename(sub_dir) == 'src':
                 lib_paths += '/src'
 
                 # add all the src extensions in src folder
-                src_files += helper.get_files_recursively(sub_dir, SRC_FILE_EXTS)
+                src_files += get_files_recursively(sub_dir, SRC_FILE_EXTS)
 
                 # add all the header extensions in src folder
-                hdr_files += helper.get_files_recursively(sub_dir, HDR_FILE_EXTS)
+                hdr_files += get_files_recursively(sub_dir, HDR_FILE_EXTS)
                 src_found = True
                 break
 
         if src_found is not True:
             # add all the src extensions
-            src_files += helper.get_files_recursively(lib, SRC_FILE_EXTS)
+            src_files += get_files_recursively(lib, SRC_FILE_EXTS)
 
             # add all the header extensions
-            hdr_files += helper.get_files_recursively(lib, HDR_FILE_EXTS)
+            hdr_files += get_files_recursively(lib, HDR_FILE_EXTS)
 
         # go through all files and generate cmake tags
         data = {'lib-path': [lib_paths], 'name': os.path.basename(lib),
                 'wcosa-core': [helper.get_cosa_path()],
-                'srcs': ['\' \''.join(src_files)],
-                'hdrs': [' '.join(hdr_files)], 'board': project_data['board']}
+                'srcs': [quote_join(src_files)],
+                'hdrs': [quote_join(hdr_files)], 'board': project_data['board']}
 
         for line in content:
             line = line[2:len(line) - 3]
@@ -89,7 +95,7 @@ def firmware_gen(content, project_data):
     curr_lib_path = project_data['current-path'] + '/lib'
     str_to_return = ''
 
-    lib_files = ' '.join(helper.get_dirnames(curr_lib_path))
+    lib_files = ' '.join(get_dirnames(curr_lib_path))
 
     data = {'name': project_data['project-name'], 'libs': lib_files,
             'cosa-libraries': project_data['cosa-libraries'], 'port': project_data['port'],
