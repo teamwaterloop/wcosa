@@ -9,7 +9,7 @@ from wcosa.utils.helper import (
     get_dirnames,
     get_dirs,
     get_files_recursively,
-    quote_join
+    quote_join,
 )
 
 DEF_SEARCH_TAG = '% def-search'
