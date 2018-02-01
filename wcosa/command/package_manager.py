@@ -3,16 +3,16 @@ import re
 from wcosa.utils.output import write, writeln
 
 class Package:
-    def __init__(self, name, url, version):
+    def __init__(self, name, url, branch, version, path):
         self.name = name
         self.url = url
+        self.branch = branch
         self.version = version
-
-    def __str__(self):
-        return "package %s version %s at %s" % (self.name, self.version, self.url)
+        self.path = path
 
     def __repr__(self):
-        return "name: %s, version: %s, url: %s" % (self.name, self.version, self.url)
+        return ("name: %s, url: %s, branch: %s, version: %s, path: %s" %
+                    (self.name, self.url, self.branch, self.version, self.path))
 
 class PackageFormatError(Exception):
     def __init__(self, package_string):
@@ -23,20 +23,22 @@ class PackageFormatError(Exception):
 
 FULL_URL = r'(?P<url>https?://\S+/(?P<name>\S+))'
 GITHUB = r'(?P<github>\w+/(?P<name>\w+))'
-VERSION = r':(?P<version>\S+)'
-EXPLICIT_NAME = r'( as (?P<explicit_name>\S+))?'
-VALID_SCHEMAS = [re.compile('^' + FULL_URL + VERSION + EXPLICIT_NAME + '$'),
-                 re.compile('^' + GITHUB + VERSION + EXPLICIT_NAME + '$')]
+BRANCH = r'(:(?P<branch>\w+))?'
+VERSION = r'@(?P<version>\S+)'
+PATH = r'( as (?P<path>\S+))?'
+VALID_SCHEMAS = [re.compile('^' + FULL_URL + BRANCH + VERSION + PATH + '$'),
+                 re.compile('^' + GITHUB + BRANCH + VERSION + PATH + '$')]
 
-def parse_entries(package_strings):
+def parse_package_names(package_strings):
     """
-    Convert package strings to package entries.
-    A package string is of the form '(BASE_URL|GITHUB_SHORTHAND):VERSION [as NAME]'
+    Convert package strings to package entities.
+    A package string is of the form '(BASE_URL|GITHUB)[:BRANCH]@VERSION as PATH'
     where:
-        BASE_URL is a valid URL pointing to a git repository
-        GITHUB_SHORTHAND is of the form 'username/reponame'
-        VERSION is some tag on the given repository
-        NAME is the preferred package name
+        FULL_URL is a valid URL pointing to a git repository
+        GITHUB is of the form 'username/reponame'
+        BRANCH [default master] is the branch to track
+        VERSION [default HEAD] is a tag on the given repository
+        PATH is the relative path to install location
     """
     packages = []
     for package_string in package_strings:
@@ -51,10 +53,9 @@ def parse_entries(package_strings):
             url = 'https://github.com/' + groups['github']
         else:
             url = groups['url']
-        if groups['explicit_name']: # always a group, possibly empty
-            name = groups['explicit_name']
-        else:
-            name = groups['name']
-        version = groups['version']
-        packages.append(Package(name, url, version))
+        name = groups['name']
+        branch = 'master' if not groups['branch'] else groups['branch']
+        version = 'HEAD' if not groups['version'] else groups['version']
+        path = groups['path']
+        packages.append(Package(name, url, branch, version, path))
     return packages
