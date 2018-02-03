@@ -35,16 +35,16 @@ PATH = r'( as (?P<path>\S+))?'
 VALID_SCHEMAS = [re.compile('^' + FULL_URL + BRANCH + VERSION + PATH + '$'),
                  re.compile('^' + GITHUB + BRANCH + VERSION + PATH + '$')]
 
-def package_name_parse_list(package_strings):
+def package_string_parse_list(package_strings):
     """
     Convert package strings to package entities.
-    A package string is of the form (BASE_URL|GITHUB)[:BRANCH][@VERSION] as PATH
+    Package strings must match (BASE_URL|GITHUB)[:BRANCH][@VERSION][ as PATH]
     where:
         FULL_URL is a valid URL pointing to a git repository
         GITHUB is of the form 'username/reponame'
         BRANCH [default master] is the branch to track
-        VERSION [default HEAD] is a tag on the given branch
-        PATH is the relative path to install location
+        VERSION [default master] is a tag on the given branch
+        PATH [default 'lib/NAME'] is the relative path to install location
     """
     packages = []
     for package_string in package_strings:
@@ -61,8 +61,8 @@ def package_name_parse_list(package_strings):
             url = groups['url']
         name = groups['name']
         branch = 'master' if not groups['branch'] else groups['branch']
-        version = 'HEAD' if not groups['version'] else groups['version']
-        path = groups['path']
+        version = 'master' if not groups['version'] else groups['version']
+        path = 'lib' + name if not groups['path'] else groups['path']
         packages.append(Package(name, url, branch, version, path))
     return packages
 
@@ -115,7 +115,7 @@ def package_repo_init(pkgpath):
     return pkgrepo
 
 def package_install_list(path, packages):
-    packages = package_names_parse(packages)
+    packages = package_name_parse_list(packages)
     pkgpath = path + '/.pkg'
     pkgrepo = package_repo_open(pkgpath)
 
