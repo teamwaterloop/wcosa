@@ -44,20 +44,24 @@ class AlreadyInstalledException(Exception):
     def __init__(self, link_updated):
         self.link_updated = link_updated
 
-FULL_URL = r'(?P<url>https?://\S+/(?P<name>\S+))'
+URL = r'(?P<url>https?://\S+/(?P<name>\S+))'
 GITHUB = r'(?P<github>[\w\-]+/(?P<name>[\w\-]+))'
 BRANCH = r'(:(?P<branch>[\w\-]+))?'
 VERSION = r'(@(?P<version>\S+))?'
 PATH = r'( as (?P<path>\S+))?'
-VALID_SCHEMAS = [re.compile('^' + FULL_URL + BRANCH + VERSION + PATH + '$'),
-                 re.compile('^' + GITHUB + BRANCH + VERSION + PATH + '$')]
+VALID_SCHEMAS = [re.compile('^\s*' + URL + BRANCH + VERSION + PATH + '\s*$'),
+                 re.compile('^\s*' + GITHUB + BRANCH + VERSION + PATH + '\s*$')]
+
+def package_dir_path(path):
+    """Return package path to package install directory"""
+    return path + '/.pkg'
 
 def package_string_parse_many(package_strings):
     """
     Convert package strings to package entities.
-    Package strings must match (BASE_URL|GITHUB)[:BRANCH][@VERSION][ as PATH]
+    Package strings must match (URL|GITHUB)[:BRANCH][@VERSION][ as PATH]
     where:
-        FULL_URL is a valid URL pointing to a git repository
+        URL is a valid URL pointing to a git repository
         GITHUB is of the form 'username/reponame'
         BRANCH [default master] is the branch to track
         VERSION [default master] is a tag on the given branch
@@ -79,7 +83,7 @@ def package_string_parse_many(package_strings):
         name = groups['name']
         branch = 'master' if not groups['branch'] else groups['branch']
         version = 'master' if not groups['version'] else groups['version']
-        path = 'lib' + name if not groups['path'] else groups['path']
+        path = 'lib/' + name if not groups['path'] else groups['path']
         packages.append(Package(name, url, branch, version, path))
     return packages
 
@@ -147,7 +151,7 @@ def package_repo_init(pkgpath):
 
 def package_link(path, package):
     """Link package directory from pkgpath to package.path"""
-    install_path = os.path.abspath(path + '/.pkg/' + package.name)
+    install_path = os.path.abspath(package_dir_path(path)+ '/' + package.name)
     link_path = os.path.abspath(path + '/' + package.path)
     link_basedir = '/'.join(link_path.split('/')[:-1])
     try:
@@ -202,7 +206,7 @@ def package_install(path, package, batch_mode=False, pkgrepo=None,
     If batch_mode is True, do not update package list (caller will update).
     Returns True on success, else (error or already installed) False.
     """
-    pkgpath = path + '/.pkg'
+    pkgpath = package_dir_path(path)
     if pkgrepo is None:
         pkgepo = package_repo_open(pkgpath)
     if pkglist is None:
@@ -233,7 +237,7 @@ def package_install_many(path, packages):
     """Install a list of packages"""
     packages = package_string_parse_many(packages)
     installed_packages = []
-    pkgpath = path + '/.pkg'
+    pkgpath = package_dir_path(path)
     pkglist = package_list_read(pkgpath)
     pkgnames = list(map(lambda x: x['name'], pkglist))
     pkgrepo = package_repo_open(pkgpath)
@@ -243,3 +247,11 @@ def package_install_many(path, packages):
             installed_packages.append(package) # To be written to database
     if installed_packages:
         package_list_write_many(pkgpath, installed_packages)
+
+def package_update_all(path):
+    """Update all installed packages"""
+    repo = package_repo_open(package_dir_path(path))
+    for sm in repo.submodules:
+        write("Updating %s... " % sm.name)
+        sm.update()
+        writeln("Done.")
