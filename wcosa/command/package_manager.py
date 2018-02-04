@@ -4,10 +4,11 @@ A lightweight package management system for WCosa.
 """
 
 import json
-import git
 import os
 import re
 import sys
+
+import git
 
 from wcosa.utils.output import write, writeln
 
@@ -45,7 +46,7 @@ class GitFetchException(Exception):
                      else ''))
 
     def __str__(self):
-        return 'Could not fetch submodule from %s' + package.url
+        return 'Could not fetch submodule from %s' + self.url
 
 
 class AlreadyInstalledException(Exception):
@@ -104,7 +105,7 @@ def package_list_read(pkgpath):
     try:
         with open(pkgpath + '/pkglist', 'r') as pkglistfile:
             return json.loads(pkglistfile.read())
-    except:
+    except Exception:
         return []
 
 
@@ -145,7 +146,7 @@ def package_repo_open(pkgpath):
     """Try to open package repo; initalize upon failure"""
     try:
         return git.Repo(pkgpath)
-    except:
+    except Exception:
         return package_repo_init(pkgpath)
 
 
@@ -172,7 +173,7 @@ def package_link(path, package):
     link_basedir = '/'.join(link_path.split('/')[:-1])
     try:
         os.mkdir(link_basedir)
-    except:
+    except Exception:
         pass  # Already exists or failed (then next try will fail)
     try:
         os.symlink(install_path, link_path)
@@ -181,7 +182,7 @@ def package_link(path, package):
             current_path = os.readlink(link_path)
             if current_path == install_path:
                 return  # Then we're done
-        except:
+        except Exception:
             pass
         raise (type(e))('Could not link package: ' + str(e))
 
@@ -209,9 +210,9 @@ def _package_install_unsafe(path, package, pkgrepo, pkglist, pkgnames):
             raise AlreadyInstalledException(link_updated=True)
     # If the above did not return, we need to actually install the package
     try:
-        sm = pkgrepo.create_submodule(package.name, package.name,
-                                      url=package.url, branch=package.branch)
-    except:  # Default message is cryptic
+        pkgrepo.create_submodule(package.name, package.name,
+                                 url=package.url, branch=package.branch)
+    except Exception:  # Default message is cryptic
         raise GitFetchException(package)
     package_link(path, package)
     writeln('Installed.')
@@ -226,7 +227,7 @@ def package_install(path, package, batch_mode=False, pkgrepo=None,
     """
     pkgpath = package_dir_path(path)
     if pkgrepo is None:
-        pkgepo = package_repo_open(pkgpath)
+        pkgrepo = package_repo_open(pkgpath)
     if pkglist is None:
         pkglist = package_list_read(pkgpath)
     if pkgnames is None:
@@ -243,7 +244,7 @@ def package_install(path, package, batch_mode=False, pkgrepo=None,
         try:
             sm = pkgrepo.submodule(package.name)
             sm.remove()
-        except:
+        except Exception:
             pass
         pkgrepo.git.clean('-fdX')  # Remove all untracked files
         writeln('Install aborted.')
