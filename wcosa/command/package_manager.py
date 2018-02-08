@@ -58,7 +58,7 @@ URL = r'(?P<url>https?://\S+/(?P<name>\S+))'
 GITHUB = r'(?P<github>[\w\-]+/(?P<name>[\w\-]+))'
 BRANCH = r'(:(?P<branch>[\w\-]+))?'
 VERSION = r'(@(?P<version>\S+))?'
-PATH = r'( as (?P<path>\S+))?'
+PATH = r'( at (?P<path>\S+))?'
 VALID_SCHEMAS = [re.compile('^' + URL + BRANCH + VERSION + PATH + '$'),
                  re.compile('^' + GITHUB + BRANCH + VERSION + PATH + '$')]
 
@@ -71,7 +71,7 @@ def package_dir_path(path):
 def package_string_parse_many(package_strings):
     """
     Convert package strings to package entities.
-    Package strings must match (URL|GITHUB)[:BRANCH][@VERSION][ as PATH]
+    Package strings must match (URL|GITHUB)[:BRANCH][@VERSION][ at PATH]
     where:
         URL is a valid URL pointing to a git repository
         GITHUB is of the form 'username/reponame'
@@ -109,8 +109,8 @@ def package_list_read(pkgpath):
         return []
 
 
-def package_list_write_many(pkgpath, packages):
-    """Update package list with the given list of packages"""
+def package_list_add_many(pkgpath, packages):
+    """Add given packages to package list"""
     if not packages:
         return  # Nothing to write
     repo = package_repo_open(pkgpath)
@@ -138,8 +138,38 @@ def package_list_write_many(pkgpath, packages):
         repo.index.commit('Updated package list\n\n' +
                           ('New: %s\n' % ', '.join(newentries)
                            if newentries else '') +
-                          ('Updated: %s\n' % ', '.join(updentries)
+                          ('Changed: %s\n' % ', '.join(updentries)
                            if updentries else ''))
+
+
+def package_list_remove_many(pkgpath, packages):
+    """Remove given packages from package list"""
+    if not packages:
+        return  # Nothing to remove
+    repo = package_repo_open(pkgpath)
+    uninstalled = []
+    unlinked = []
+    with open(pkgpath + '/pkglist', 'r+') as pkglistfile:
+        pkglist = json.loads(pkglistfile.read())
+        pkgnames = list(map(lambda x: x['name'], pkglist))
+        for package in packages:
+            assert package.name in pkgnames
+            index = pkgnames.index(package.name)
+            pkglist[index]['paths'].remove(package.path)
+            if pkglist[index]['paths']:
+                unlinked.append(package.name)
+            else:
+                del pkglist[index]
+                uninstalled.append(package.name)
+    with open(pkgpath + '/pkglist', 'w') as pkglistfile:
+        pkglistfile.write(json.dumps(pkglist))
+    repo.index.add(['pkglist'])
+    if repo.is_dirty():  # Something has changed
+        repo.index.commit('Updated package list\n\n' +
+                          ('Uninstalled: %s\n' % ', '.join(uninstalled)
+                           if uninstalled else '') +
+                          ('Changed: %s\n' % ', '.join(unlinked)
+                           if unlinked else ''))
 
 
 def package_repo_open(pkgpath):
@@ -218,11 +248,10 @@ def _package_install_unsafe(path, package, pkgrepo, pkglist, pkgnames):
     writeln('Installed.')
 
 
-def package_install(path, package, batch_mode=False, pkgrepo=None,
-                    pkglist=None, pkgnames=None):
+def package_install(path, package, batch=False, pkgrepo=None, pkglist=None):
     """
     Install a package or roll back to last coherent state upon failure.
-    If batch_mode is True, do not update package list (caller will update).
+    If batch is True, do not update package list (caller will update).
     Returns True on success, else (error or already installed) False.
     """
     pkgpath = package_dir_path(path)
@@ -230,14 +259,13 @@ def package_install(path, package, batch_mode=False, pkgrepo=None,
         pkgrepo = package_repo_open(pkgpath)
     if pkglist is None:
         pkglist = package_list_read(pkgpath)
-    if pkgnames is None:
-        pkgnames = list(map(lambda x: x['name'], pkglist))
+    pkgnames = list(map(lambda x: x['name'], pkglist))
     try:
         _package_install_unsafe(path, package, pkgrepo, pkglist, pkgnames)
         pkgrepo.index.add(['.gitmodules', package.name])
         pkgrepo.index.commit('Installed ' + package.name)
-        if not batch_mode:
-            package_list_write_many(pkgpath, [package])
+        if not batch:
+            package_list_add_many(pkgpath, [package])
     except AlreadyInstalledException as e:
         return e.link_updated
     except Exception as e:  # Installation failed, roll back
@@ -259,14 +287,13 @@ def package_install_many(path, packages):
     installed_packages = []
     pkgpath = package_dir_path(path)
     pkglist = package_list_read(pkgpath)
-    pkgnames = list(map(lambda x: x['name'], pkglist))
     pkgrepo = package_repo_open(pkgpath)
 
     for package in packages:
-        if package_install(path, package, True, pkgrepo, pkglist, pkgnames):
+        if package_install(path, package, True, pkgrepo, pkglist):
             installed_packages.append(package)  # To be written to database
     if installed_packages:
-        package_list_write_many(pkgpath, installed_packages)
+        package_list_add_many(pkgpath, installed_packages)
 
 
 def package_update_all(path):
@@ -276,3 +303,65 @@ def package_update_all(path):
         write('Updating %s... ' % sm.name)
         sm.update()
         writeln('Done.')
+        if repo.is_dirty():  # Something has changed
+            repo.index.commit('Updated ' + sm.name)
+
+
+def package_uninstall(path, package, batch=False, pkgrepo=None, pkglist=None):
+    """
+    Uninstall a package or unlink from given location if linked to multiple.
+    If batch is True, do not update package list (caller will update).
+    Returns True on success, else (on error) False.
+    """
+    pkgpath = package_dir_path(path)
+    if pkgrepo is None:
+        pkgrepo = package_repo_open(pkgpath)
+    if pkglist is None:
+        pkglist = package_list_read(pkgpath)
+    pkgnames = list(map(lambda x: x['name'], pkglist))
+
+    write('Uninstalling %s... ' % package.name)
+    sys.stdout.flush()
+    if package.name not in pkgnames:
+        writeln('Not installed.')
+        return False
+    try:
+        paths = pkglist[pkgnames.index(package.name)]['paths']  # Get paths
+        try:
+            os.unlink(path + '/' + package.path)
+        except Exception:
+            writeln('%s not linked at %s.' % (package.name, package.path))
+            return False
+        if len(paths) > 1:  # Installed in multiple locations
+            writeln('Unlinked from %s.' % package.path)
+            if not batch:
+                package_list_remove_many(pkgpath, [package])
+            return True
+        else:
+            sm = pkgrepo.submodule(package.name)
+            sm.remove(force=True)  # Remove even if there are local changes
+            pkgrepo.index.add(['.gitmodules'])
+            pkgrepo.index.remove([package.name], r=True)  # Remove recursively
+            pkgrepo.index.commit('Uninstalled ' + package.name)
+        if not batch:
+            package_list_remove_many(pkgpath, [package])
+    except Exception as e:
+        writeln('Failed to uninstall %s: %s' % (package.name, e))
+        return False
+    else:
+        writeln('Uninstalled.')
+        return True
+
+
+def package_uninstall_many(path, packages):
+    """Uninstall a list of packages"""
+    packages = package_string_parse_many(packages)
+    uninstalled_packages = []
+    pkgpath = package_dir_path(path)
+    pkgrepo = package_repo_open(pkgpath)
+
+    for package in packages:
+        if package_uninstall(path, package, True, pkgrepo):
+            uninstalled_packages.append(package)
+    if uninstalled_packages:
+        package_list_remove_many(pkgpath, uninstalled_packages)
