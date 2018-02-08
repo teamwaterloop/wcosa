@@ -8,6 +8,7 @@ install_requires = [
     'colorama',
     'pyserial>=3,<4',
     'six',
+    'gitpython',
 ]
 
 
@@ -21,11 +22,11 @@ def package_files(directory):
 
 setup(
     name='WCosa',
-    version='1.0.5',
+    version='1.0.7',
     description='Create, Build, Upload and Monitor AVR Cosa Projects',
     author='Deep Dhillon, Jeff Niu',
-    author_email='deep.dhill6@gmail.com, jeffniu22@gmail.com, ambareeshbalaji@gmail.com',
-    long_description=open('README.md').read(),
+    author_email='deep@deepdhillon.com, jeffniu22@gmail.com, ambareeshbalaji@gmail.com',
+    long_description=open('README.rst').read(),
     license='MIT',
     packages=find_packages(),
     install_requires=install_requires,
