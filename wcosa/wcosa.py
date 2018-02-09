@@ -80,6 +80,7 @@ def parse():
         help='buad rate for serial (default: 9600)',
         type=int)
     subparsers.add_parser('boards', help='print supported boards')
+    subparsers.add_parser('clean', help='clean build files')
 
     package_parser = subparsers.add_parser(
         'package',
