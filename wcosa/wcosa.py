@@ -3,10 +3,12 @@ Main Script that calls other scripts to make wcosa work
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
 
 import argparse
 
 from wcosa.command import handle, monitor, package_manager, use
+from wcosa.info import __version__
 from wcosa.objects.objects import Board, Fore, Generator, IDE, Path, Port
 from wcosa.parsers import board_parser
 from wcosa.utils import helper, output
@@ -23,9 +25,12 @@ def parse():
         type=str)
     subparsers = parser.add_subparsers(dest='action', metavar='action')
     subparsers.required = True
+    version_parser = subparsers.add_parser(
+        'version',
+        help='wcosa version')
     create_parser = subparsers.add_parser(
-            'create',
-            help='create project')
+        'create',
+        help='create project')
     create_parser.add_argument(
         '--board',
         help='board to use for wcosa project',
@@ -126,8 +131,9 @@ def main():
     options = parse()
 
     path = Path(options.path)
-
     # based on the action call scripts
+    if options.action == 'version':
+        output.writeln(__version__)
     if options.action == 'boards':
         print_boards()
     elif options.action == 'create':
