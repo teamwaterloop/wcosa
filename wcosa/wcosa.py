@@ -24,7 +24,7 @@ def parse():
         type=str)
     subparsers = parser.add_subparsers(dest='action', metavar='action')
     subparsers.required = True
-    version_parser = subparsers.add_parser(
+    subparsers.add_parser(
         'version',
         help='wcosa version')
     create_parser = subparsers.add_parser(

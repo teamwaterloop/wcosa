@@ -3,6 +3,7 @@
 import os
 
 from setuptools import find_packages, setup
+
 from wcosa.info import __version__
 
 install_requires = [
