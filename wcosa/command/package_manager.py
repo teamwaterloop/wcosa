@@ -32,10 +32,10 @@ class Package:
     def from_dict(json):
         path = json['paths'][0] if 'paths' in json else json['path']
         return Package(
-            json['unqualified_name'], 
-            json['url'], 
-            json['branch'], 
-            json['version'], 
+            json['unqualified_name'],
+            json['url'],
+            json['branch'],
+            json['version'],
             path,
         )
 
@@ -63,7 +63,7 @@ class AlreadyInstalledException(Exception):
         self.link_updated = link_updated
 
 
-PACKAGE_LIST_FILE='pkglist.json'
+PACKAGE_LIST_FILE = 'pkglist.json'
 URL = r'(?P<url>https?://\S+/(?P<name>\S+))'
 GITHUB = r'(?P<github>[\w\-]+/(?P<name>[\w\-]+))'
 BRANCH = r'(:(?P<branch>[\w\-]+))?'

@@ -11,14 +11,10 @@ import subprocess
 
 import serial.tools.list_ports
 
-from wcosa.command import handle
 from wcosa.objects import settings
 from wcosa.objects.objects import (
-    Board,
     Fore,
     Generator,
-    IDE,
-    Path,
 )
 from wcosa.utils import helper, output
 from wcosa.utils.finder import (

@@ -20,8 +20,8 @@ END_TAG = '% end'
 FILL_BLOCK_START = '{{'
 FILL_BLOCK_END = '}}'
 
-LIB_SUBDIR = "lib"
-PKG_SUBDIR = "pkg"
+LIB_SUBDIR = 'lib'
+PKG_SUBDIR = 'pkg'
 
 SRC_FILE_EXTS = ('.cpp', '.c', '.cc')
 HDR_FILE_EXTS = ('.hh', '.h')
