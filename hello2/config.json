@@ -1,0 +1,10 @@
+{
+  "board": "uno", 
+  "ide": "", 
+  "framework": "cosa", 
+  "generator": "", 
+  "port": "", 
+  "cosa-libraries": "", 
+  "build-flags": "DHello", 
+  "module-flags": {}
+}

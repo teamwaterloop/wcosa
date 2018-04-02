@@ -8,7 +8,7 @@
     },
     {
       "id": "app-gen",
-      "src": "templates/cmake/CMakeLists.txt-app.tpl",
+      "src": "templates/cmake/CMakeLists.txt.tpl",
       "des": "{{PRJ-ROOT}}/.wio/CMakeLists.txt",
       "override": true
     },
@@ -50,7 +50,7 @@
     },
     {
       "id": "lib-gen",
-      "src": "templates/cmake/CMakeLists.txt-lib.tpl",
+      "src": "templates/cmake/CMakeLists.txt.tpl",
       "des": "{{PRJ-ROOT}}/.wio/CMakeLists.txt",
       "override": true
     },

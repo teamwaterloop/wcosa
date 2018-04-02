@@ -9,20 +9,23 @@
  package main
 
 import (
-    "time"
-    "os"
-    "log"
-    "fmt"
-    "path/filepath"
-
-    "github.com/urfave/cli"
-    commandCreate "wio/cmd/wio/commands/create"
-    . "wio/cmd/wio/utils/types"
     "wio/cmd/wio/utils/io"
+    "wio/cmd/wio/parsers/libs"
 )
 
 //go:generate go-bindata -nomemcopy -prefix ../../ ../../assets/config/... ../../assets/templates/...
 func main()  {
+
+    //config, _ := libs.ParseLibs("/Users/deep/Development/gowork/src/wio/hello")
+    //spew.Dump(config)
+
+    //fmt.Println()
+    //libs.WriteLibs("/Users/deep/Development/gowork/src/wio/hello", config)
+
+    libs.CreateCMakeLibraries("/Users/deep/Development/gowork/src/wio/hello", "main", "uno")
+
+    return
+    /*
     // override help template
     cli.AppHelpTemplate =
 `Wio a simplified development process for embedded applications.
@@ -229,9 +232,7 @@ Run "wio help" to see global options.
                 },
             },
             Action: func(c *cli.Context) error {
-                /*
-                build based on the type of project (from config file)
-                 */
+                // build based on the type of project (from config file)
                 return nil
             },
         },
@@ -358,9 +359,7 @@ Run "wio help" to see global options.
                 },
             },
             Action: func(c *cli.Context) error {
-                /*
-                If no flag provided, show current settings
-                 */
+                // If no flag provided, show current settings
                 return nil
             },
         },
@@ -445,6 +444,7 @@ Run "wio help" to see global options.
     if err != nil {
         log.Fatal(err)
     }
+    */
 }
 
 // Set's verbose mode on

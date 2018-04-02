@@ -39,3 +39,11 @@ type Data struct {
 type Paths struct {
     Paths []Data
 }
+
+type CMakeLibrary struct {
+    Name string
+    SourcePath string
+    Src []string
+    Hdr []string
+    libs []*CMakeLibrary
+}

@@ -15,13 +15,14 @@ import (
     "github.com/fatih/color"
 )
 
-var Norm = writer{verbose:true}
-var Verb = writer{verbose:false}
+var Norm = writer{verbose:true, status:true}
+var Verb = writer{verbose:false, status:true}
 var w = ansicolor.NewAnsiColorWriter(os.Stdout)
 
 // user should not touch this
 type writer struct {
     verbose bool
+    status bool
 }
 
 // Turns verbose mode on. This is the mode when Vprintf and Vprintln functions work
@@ -29,9 +30,14 @@ func SetVerbose() {
     Verb.verbose = true
 }
 
+// This is used to turn normal mode print on and off. This way a silent mode can be implemented
+func SetStatus(status bool) {
+    Norm.status = status
+}
+
 // Black is a convenient helper function to print with black foreground.
 func (writer writer) Black(format string, a ...interface{}) {
-    if !writer.verbose { return }
+    if !writer.status || !writer.verbose { return }
 
     if GetOS() == WINDOWS {
         text := "%s" + format + "%s"
@@ -43,7 +49,7 @@ func (writer writer) Black(format string, a ...interface{}) {
 
 // Red is a convenient helper function to print with red foreground.
 func (writer writer) Red(format string, a ...interface{}) {
-    if !writer.verbose { return }
+    if !writer.status || !writer.verbose { return }
 
     if GetOS() == WINDOWS {
         text := "%s" + format + "%s"
@@ -55,7 +61,7 @@ func (writer writer) Red(format string, a ...interface{}) {
 
 // Green is a convenient helper function to print with green foreground.
 func (writer writer) Green(format string, a ...interface{}) {
-    if !writer.verbose { return }
+    if !writer.status || !writer.verbose { return }
 
     if GetOS() == WINDOWS {
         text := "%s" + format + "%s"
@@ -67,7 +73,7 @@ func (writer writer) Green(format string, a ...interface{}) {
 
 // Yellow is a convenient helper function to print with yellow foreground.
 func (writer writer) Yellow(format string, a ...interface{}) {
-    if !writer.verbose { return }
+    if !writer.status || !writer.verbose { return }
 
     if GetOS() == WINDOWS {
         text := "%s" + format + "%s"
@@ -79,7 +85,7 @@ func (writer writer) Yellow(format string, a ...interface{}) {
 
 // Blue is a convenient helper function to print with blue foreground.
 func (writer writer) Blue(format string, a ...interface{}) {
-    if !writer.verbose { return }
+    if !writer.status || !writer.verbose { return }
 
     if GetOS() == WINDOWS {
         text := "%s" + format + "%s"
@@ -91,7 +97,7 @@ func (writer writer) Blue(format string, a ...interface{}) {
 
 // Magenta is a convenient helper function to print with magenta foreground.
 func (writer writer) Magenta(format string, a ...interface{}) {
-    if !writer.verbose { return }
+    if !writer.status || !writer.verbose { return }
 
     if GetOS() == WINDOWS {
         text := "%s" + format + "%s"
@@ -103,7 +109,7 @@ func (writer writer) Magenta(format string, a ...interface{}) {
 
 // Cyan is a convenient helper function to print with cyan foreground.
 func (writer writer) Cyan(format string, a ...interface{}) {
-    if !writer.verbose { return }
+    if !writer.status || !writer.verbose { return }
 
     if GetOS() == WINDOWS {
         text := "%s" + format + "%s"
@@ -115,7 +121,7 @@ func (writer writer) Cyan(format string, a ...interface{}) {
 
 // White is a convenient helper function to print with white foreground.
 func (writer writer) White(format string, a ...interface{}) {
-    if !writer.verbose { return }
+    if !writer.status || !writer.verbose { return }
 
     if GetOS() == WINDOWS {
         text := "%s" + format + "%s"
@@ -127,7 +133,7 @@ func (writer writer) White(format string, a ...interface{}) {
 
 // Normal is a convenient helper function to print with default/normal foreground.
 func (writer writer) Normal(format string, a ...interface{}) {
-    if !writer.verbose { return }
+    if !writer.status || !writer.verbose { return }
 
     text := "%s" + format + "%s"
     fmt.Fprintf(w, text, "\x1b[39m", "\x1b[39m")
@@ -136,7 +142,7 @@ func (writer writer) Normal(format string, a ...interface{}) {
 // Special function to be used when printing error logs.
 // It terminates the program after printing the logs
 func (writer writer) Error(format string, a ...interface{})  {
-    if !writer.verbose {
+    if !writer.status || !writer.verbose {
         Norm.Red("Turn Verbose mode to see the detailed error\n")
         os.Exit(2)
     }
@@ -149,7 +155,7 @@ func (writer writer) Error(format string, a ...interface{})  {
 // Special function to be used when using Verbose mode.
 // In this mode, color can be set and other verbose default things can be defined
 func (writer writer) Verbose(format string, a ...interface{}) {
-    if !writer.verbose { return }
+    if !writer.status || !writer.verbose { return }
 
     writer.Normal(format, a)
 }

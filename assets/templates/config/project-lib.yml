@@ -8,11 +8,9 @@ lib:
   board: [ALL]
   compile_flags: []
   ide: ide
-  default_target: test
 
-  targets:
-    test:
-      board: board
-      compile_flags: []
-
-libraries:
+targets:
+  default: test
+  test:
+    board: board
+    compile_flags: []

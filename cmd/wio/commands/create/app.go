@@ -49,7 +49,10 @@ func (app App) createTemplateProject() (error) {
     if config, err = app.FillConfig(); err != nil { return err }
 
     // create cmake files for each target
-    copyTargetCMakes(app.args.Directory, app.args.AppType, config.MainTag.Targets)
+    copyTargetCMakes(app.args.Directory, config.MainTag.Targets)
+
+    // fill cmake
+    app.FillCMake(config)
 
     return nil
 }
@@ -83,8 +86,22 @@ func (app App) FillConfig() (*types.AppConfig, error) {
         appConfig.MainTag.Default_target = "main"
     }
 
-    appConfig.MainTag.Targets[appConfig.MainTag.Default_target] = &types.TargetSubTags{}
-    appConfig.MainTag.Targets[appConfig.MainTag.Default_target].Board = app.args.Board
+    if target, ok := appConfig.MainTag.Targets[appConfig.MainTag.Default_target]; ok {
+        defaultTarget := &types.TargetSubTags{}
+        defaultTarget.Board = app.args.Board
+        defaultTarget.Compile_flags = target.Compile_flags
+        appConfig.MainTag.Targets[appConfig.MainTag.Default_target] = defaultTarget
+    } else {
+        appConfig.MainTag.Targets[appConfig.MainTag.Default_target] = &types.TargetSubTags{}
+        appConfig.MainTag.Targets[appConfig.MainTag.Default_target].Board = app.args.Board
+    }
+
+    // update libraries to include current libs
+    updatedLibraries, err := app.UpdateConfigLibs(appConfig.LibrariesTag)
+    if err != nil {
+        return nil, err
+    }
+    appConfig.LibrariesTag = updatedLibraries
 
     Verb.Verbose("* Modified information in the configuration\n")
 
@@ -95,6 +112,30 @@ func (app App) FillConfig() (*types.AppConfig, error) {
     return &appConfig, nil
 }
 
-func (app App) FillCMake(paths map[string]string) (error) {
+func (app App) UpdateConfigLibs(projectLibraries types.LibrariesTag) (types.LibrariesTag, error) {
+    libs, err := GetLibrariesSlice(app.args.Directory)
+    if err != nil {
+        return nil, err
+    }
+
+    for lib := range libs {
+        if _, ok := projectLibraries[libs[lib].Name]; !ok {
+            projectLibraries[libs[lib].Name] = &types.LibrarySubTags{}
+        }
+        projectLibraries[libs[lib].Name].Url = "local"
+        projectLibraries[libs[lib].Name].Version = "0.0.0"
+    }
+
+    return projectLibraries, nil
+}
+
+func (app App) FillCMake(config *types.AppConfig) (error) {
+    for target := range config.MainTag.Targets {
+        librariesString, libraries := GetLibraries(config.MainTag.Targets[target].Board,
+            config.LibrariesTag, app.args.Directory)
+        WriteCMakeLibraries(librariesString, target, app.args.Directory)
+        WriteCMakeFramework(libraries, target, config.MainTag.Targets[target], app.args)
+    }
+
     return nil
 }

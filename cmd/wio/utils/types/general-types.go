@@ -19,21 +19,12 @@ type CliArgs struct {
 }
 
 // type for the targets tag in the configuration file
-type TargetsTag map[string]*TargetSubTags
-
-// type for the libraries tag in the configuration file
-type LibrariesTag map[string]*LibrarySubTags
+type TargetsTag map[string]*TargetTag
 
 // Structure to handle individual target inside targets
-type TargetSubTags struct {
+type TargetTag struct {
+    Default string
     Board string
-    Compile_flags []string
-}
-
-// Structure to handle individual library inside libraries
-type LibrarySubTags struct {
-    Url           string            // local libraries will have project relative path
-    Version       string
     Compile_flags []string
 }
 
@@ -42,9 +33,7 @@ type AppTag struct {
     Name string
     Platform string
     Framework string
-    Default_target string
     Ide string
-    Targets TargetsTag
 }
 
 // Structure to hold information about project type: lib
@@ -58,16 +47,42 @@ type LibTag struct {
     Board []string
     Compile_flags []string
     Ide string
-    Default_target string
-    Targets TargetsTag
 }
 
 type AppConfig struct {
     MainTag AppTag              `yaml:"app"`
-    LibrariesTag LibrariesTag   `yaml:"libraries"`
+    Targets TargetsTag          `yaml:"targets"`
 }
 
 type LibConfig struct {
     MainTag LibTag              `yaml:"lib"`
-    LibrariesTag LibrariesTag   `yaml:"libraries"`
+    Targets TargetsTag          `yaml:"targets"`
+}
+
+// Structure to handle individual library inside libraries
+type LibraryTag struct {
+    Url           string
+    Version       string
+    Path          string
+    Compile_flags []string
+}
+
+// Structure to handle individual dependency inside dependencies
+type DependencyTag struct {
+    Name          string
+    Url           string
+    Version       string
+    Compile_flags []string
+}
+
+// type for the libraries tag in the libs.yml file
+type LibrariesTag map[string]*LibraryTag
+
+// type for the dependencies tag in the libs.yml file
+type DependenciesTag map[string]*DependencyTag
+
+// type for whole libs.yml file
+type LibsConfig struct {
+    LibrariesTag    LibrariesTag    `yaml:"libraries"`
+    DependenciesTag DependenciesTag `yaml:"dependencies"`
 }

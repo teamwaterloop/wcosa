@@ -41,7 +41,7 @@ func (lib Lib) createTemplateProject() (error) {
     if config, err = lib.FillConfig(); err != nil { return err }
 
     // create cmake files for each target
-    copyTargetCMakes(lib.args.Directory, lib.args.AppType, config.MainTag.Targets)
+    copyTargetCMakes(lib.args.Directory, config.MainTag.Targets)
 
     return nil
 }
