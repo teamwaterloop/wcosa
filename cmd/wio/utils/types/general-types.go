@@ -52,37 +52,37 @@ type LibTag struct {
 type AppConfig struct {
     MainTag AppTag              `yaml:"app"`
     Targets TargetsTag          `yaml:"targets"`
+    Libraries LibrariesTag
 }
 
 type LibConfig struct {
     MainTag LibTag              `yaml:"lib"`
     Targets TargetsTag          `yaml:"targets"`
+    Libraries LibrariesTag
 }
 
 // Structure to handle individual library inside libraries
 type LibraryTag struct {
     Url           string
-    Version       string
-    Path          string
+    Branch        string
     Compile_flags []string
 }
 
 // Structure to handle individual dependency inside dependencies
-type DependencyTag struct {
-    Name          string
-    Url           string
-    Version       string
+type LibraryLockTag struct {
+    Path          string
+    Hash          string
+    Source        string
     Compile_flags []string
 }
 
-// type for the libraries tag in the libs.yml file
+// type for the libraries tag in the libs.lock file
+type LibrariesLockTag map[string]*LibraryLockTag
+
+// type for the libraries tag in the main wio.yml file
 type LibrariesTag map[string]*LibraryTag
 
-// type for the dependencies tag in the libs.yml file
-type DependenciesTag map[string]*DependencyTag
-
-// type for whole libs.yml file
-type LibsConfig struct {
-    LibrariesTag    LibrariesTag    `yaml:"libraries"`
-    DependenciesTag DependenciesTag `yaml:"dependencies"`
+// type for whole libs.lock file
+type LibrariesLockConfig struct {
+    Libraries    LibrariesLockTag
 }

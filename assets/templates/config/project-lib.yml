@@ -14,3 +14,9 @@ targets:
   test:
     board: board
     compile_flags: []
+
+dependencies:
+  name:
+    ur:
+    branch: null
+    compile_flags: []

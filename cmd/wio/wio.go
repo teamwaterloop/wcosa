@@ -22,7 +22,7 @@ func main()  {
     //fmt.Println()
     //libs.WriteLibs("/Users/deep/Development/gowork/src/wio/hello", config)
 
-    libs.CreateCMakeLibraries("/Users/deep/Development/gowork/src/wio/hello", "main", "uno")
+    libs.PopulateCMakeFilesforLibs("/Users/deep/Development/gowork/src/wio/hello", "uno", "hello")
 
     return
     /*

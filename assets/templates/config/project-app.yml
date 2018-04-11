@@ -9,3 +9,9 @@ targets:
   main:
     board: board
     compile_flags: []
+
+dependencies:
+  name:
+    url:
+    branch: null
+    compile_flags: []

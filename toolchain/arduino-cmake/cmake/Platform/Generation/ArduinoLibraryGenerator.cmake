@@ -25,7 +25,7 @@ function(GENERATE_ARDUINO_LIBRARY INPUT_NAME)
     set(ALL_SRCS ${INPUT_SRCS} ${INPUT_HDRS})
 
     if (NOT INPUT_MANUAL)
-        #make_core_library(CORE_LIB ${BOARD_ID})
+        make_core_library(CORE_LIB ${BOARD_ID})
     endif ()
 
     find_arduino_libraries(TARGET_LIBS "${ALL_SRCS}" "")
@@ -49,14 +49,4 @@ function(GENERATE_ARDUINO_LIBRARY INPUT_NAME)
             LINK_FLAGS "${ARDUINO_LINK_FLAGS} ${LINK_FLAGS}")
 
     target_link_libraries(${INPUT_NAME} ${ALL_LIBS} "-lc -lm")
-endfunction()
-
-
-#=============================================================================#
-# GENERATE_ARDUINO_LIBRARY
-# [PUBLIC/USER]
-# see documentation at README
-#=============================================================================#
-function(GENERATE_CORE BOARD)
-    make_core_library(CORE_LIB ${BOARD})
 endfunction()
