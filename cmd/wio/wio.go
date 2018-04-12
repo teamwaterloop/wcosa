@@ -9,15 +9,18 @@
  package main
 
 import (
-    "time"
-    "os"
-    "log"
-    "fmt"
-
+    "wio/cmd/wio/utils/io"
     "github.com/urfave/cli"
-    util "../../internal/ioutils"
+    "log"
+    "time"
+    "fmt"
+    "os"
+    "path/filepath"
+    . "wio/cmd/wio/utils/types"
+    commandCreate "wio/cmd/wio/commands/create"
 )
 
+//go:generate go-bindata -nomemcopy -prefix ../../ ../../assets/config/... ../../assets/templates/...
 func main()  {
     // override help template
     cli.AppHelpTemplate =
@@ -45,6 +48,10 @@ Global options:
    {{end}}{{end}}{{if .Copyright }}
 Available commands:
 {{range .Commands}}{{if not .HideHelp}}   {{join .Names ", "}}{{ "\t"}}{{.Usage}}{{ "\n" }}{{end}}{{end}}{{end}}{{if .VisibleFlags}}
+Global options:
+   {{range $index, $option := .VisibleFlags}}{{if $index}}
+   {{end}}{{$option}}{{end}}{{end}}{{if .Copyright}}
+
 Copyright:
    {{.Copyright}}
    {{end}}{{if .Version}}
@@ -87,8 +94,11 @@ Run "wio help" to see global options.
 `
     // get default configuration values
     defaults := DConfig{}
-    data, _ := util.FileToString("assets/config/defaults.yml")
-    util.ToYmlStruct(data, &defaults)
+    err := io.AssetIO.ParseYml("config/defaults.yml", &defaults)
+
+    if err != nil {
+        log.Fatal(err)
+    }
 
     app := cli.NewApp()
     app.Name = "wio"
@@ -98,16 +108,24 @@ Run "wio help" to see global options.
     app.Copyright = "Copyright (c) 2018 Waterloop"
     app.Usage = "Create, Build and Upload AVR projects"
 
+    app.Flags = []cli.Flag {
+        cli.BoolFlag{Name: "verbose",
+            Usage: "Turns verbose mode on to show detailed errors and commands being executed",
+            },
+    }
+
     app.Commands = []cli.Command{
         {
             Name:  "create",
-            Usage: "Creates and initializes a wio project.\n\nIt also works as an updater when called on already created projects.",
+            Usage: "Creates and initializes a wio project. Also acts as updater/fixer",
             Subcommands: cli.Commands{
                 cli.Command{
                     Name:      "lib",
                     Usage:     "Creates a wio library, intended to be used by other people",
-                    UsageText: "wio create package <DIRECTORY> [command options]",
+                    UsageText: "wio create lib <DIRECTORY> <BOARD> [command options]",
                     Flags: []cli.Flag{
+                        cli.BoolFlag{Name: "update",
+                            Usage: "Update the library instead of creating it with cli settings"},
                         cli.StringFlag{Name: "ide",
                             Usage: "Creates the project for a specified IDE (CLion, Eclipse, VS Code)",
                             Value: defaults.Ide},
@@ -117,25 +135,57 @@ Run "wio help" to see global options.
                         cli.StringFlag{Name: "platform",
                             Usage: "Platform being used for this project. Platform is the type of chip supported (AVR/ ARM)",
                             Value: defaults.Platform},
-                        cli.StringFlag{Name: "board",
-                            Usage: "Board supported for this library",
-                            Value: defaults.Board},
                     },
                     Action: func(c *cli.Context) error {
+                        var board string
+
                         if len(c.Args()) == 0 {
                             fmt.Println("A Directory path/name is needed to create this wio library!")
                             fmt.Println("\nExecute `wio create app -h` for more details and help")
                             os.Exit(1)
                         }
-                        fmt.Println("Hello package")
+
+                        if !c.Bool("update") {
+                            // check if user defined a board
+                            if len(c.Args()) == 1 {
+                                fmt.Println("A Board is needed to create this wio library!")
+                                fmt.Println("\nExecute `wio create app -h` for more details and help")
+                                os.Exit(1)
+                            }
+                            board = c.Args()[1]
+                        } else {
+                            board = "none"
+                        }
+
+                        directory, err := filepath.Abs(c.Args()[0])
+                        if err != nil {
+                            panic(err)
+                        }
+
+                        libArgs := CliArgs{
+                            AppType: "lib",
+                            Directory: directory,
+                            Board: board,
+                            Framework: c.String("framework"),
+                            Platform: c.String("platform"),
+                            Ide: c.String("ide"),
+                            Tests: true,
+                            Update: c.Bool("update"),
+                        }
+                        turnVerbose(c.GlobalBool("verbose"))
+
+                        commandCreate.Execute(libArgs)
+
                         return nil
                     },
                 },
                 cli.Command{
                     Name:      "app",
                     Usage:     "Creates a wio application, intended to be compiled and uploaded to a device",
-                    UsageText: "wio create app <BOARD> <DIRECTORY> [command options]",
+                    UsageText: "wio create app <DIRECTORY> <BOARD> [command options]",
                     Flags: []cli.Flag{
+                        cli.BoolFlag{Name: "update",
+                            Usage: "Update the application instead of creating it with cli settings"},
                         cli.StringFlag{Name: "ide",
                             Usage: "Creates the project for a specified IDE (CLion, Eclipse, VS Code)",
                             Value: defaults.Ide},
@@ -150,17 +200,45 @@ Run "wio help" to see global options.
                         },
                     },
                     Action: func(c *cli.Context) error {
-                        // check if user defined a board
+                        var board string
+
                         if len(c.Args()) == 0 {
-                            fmt.Println("A Board is needed to create this wio application!")
-                            fmt.Println("\nExecute `wio create app -h` for more details and help")
-                            os.Exit(1)
-                        } else if len(c.Args()) == 1 {
                             fmt.Println("A Directory path/name is needed to create this wio application!")
                             fmt.Println("\nExecute `wio create app -h` for more details and help")
                             os.Exit(1)
                         }
-                        fmt.Println("Hello app")
+
+                        if !c.Bool("update") {
+                            // check if user defined a board
+                            if len(c.Args()) == 1 {
+                                fmt.Println("A Board is needed to create this wio application!")
+                                fmt.Println("\nExecute `wio create app -h` for more details and help")
+                                os.Exit(1)
+                            }
+                            board = c.Args()[1]
+                        } else {
+                            board = "none"
+                        }
+
+                        directory, _ := filepath.Abs(c.Args()[0])
+                        if err != nil {
+                            panic(err)
+                        }
+
+                        appArgs := CliArgs{
+                            AppType: "app",
+                            Directory: directory,
+                            Board: board,
+                            Framework: c.String("framework"),
+                            Platform: c.String("platform"),
+                            Ide: c.String("ide"),
+                            Tests: c.Bool("tests"),
+                            Update: c.Bool("update"),
+                        }
+                        turnVerbose(c.GlobalBool("verbose"))
+
+                        commandCreate.Execute(appArgs)
+
                         return nil
                     },
                 },
@@ -180,9 +258,7 @@ Run "wio help" to see global options.
                 },
             },
             Action: func(c *cli.Context) error {
-                /*
-                build based on the type of project (from config file)
-                 */
+                // build based on the type of project (from config file)
                 return nil
             },
         },
@@ -309,9 +385,7 @@ Run "wio help" to see global options.
                 },
             },
             Action: func(c *cli.Context) error {
-                /*
-                If no flag provided, show current settings
-                 */
+                // If no flag provided, show current settings
                 return nil
             },
         },
@@ -391,9 +465,16 @@ Run "wio help" to see global options.
         return nil
     }
 
-    err := app.Run(os.Args)
+    err = app.Run(os.Args)
 
     if err != nil {
         log.Fatal(err)
+    }
+}
+
+// Set's verbose mode on
+func turnVerbose(value bool) {
+    if value == true {
+        io.SetVerbose()
     }
 }

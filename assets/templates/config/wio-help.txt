@@ -1,0 +1,24 @@
+# "app" tag contains core information about the project. This will produce executable and will be uploaded
+# to an embedded device. Following are some key points about customizing your application:
+# - Frameworks are SDKs for embedded devices. They contain set of libraries to use when coding.
+#   Wio supports core "arduino" and "cosa" (an open source OOP AVR development platform).
+# - Platform is the type of chip that this application will be uploaded. This platform provides
+#   libraries to access chip hardware and compilers to compile them. Wio supports "AVR" platform.
+
+
+# "lib" contains core information about the project. This will produce a library that can be used in other
+# wio projects. Wio provides native support for libraries created this way and they are included flawlessly.
+# Following are some key points about customizing your library:
+# - Frameworks are SDKs for embedded devices. They contain set of libraries to use when coding.
+#   Wio supports core "arduino" and "cosa" (an open source OOP AVR development platform).
+# - Platform is the type of chip that this application will be uploaded. This platform provides
+#   libraries to access chip hardware and compilers to compile them. Wio supports "AVR" platform.
+# - You can specify multiple authors, frameworks and boards. This information will be used to check if this
+#   library is compatible with the project it is being used in.
+# - If you want your library to be compiled with certain flags when used, provide those flags in compile_flags
+#   tag.
+
+
+# "targets" tag allows for testing and development for various settings and configurations. You can create
+# multiple targets where you can define different types of boards and compile flags. By default one target
+# is created, which is defined based on settings chosen by you in the creating process.

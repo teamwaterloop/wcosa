@@ -11,6 +11,7 @@ all: build run
 
 build:
 	@echo Building $(BINARY_NAME) project:
+	@cd "$(CURDIR)/cmd/$(BINARY_NAME)/utils/io" && $(GOPATH)/bin/go-bindata -nomemcopy -pkg io -prefix ../../../../ ../../../../assets/...
 	@cd "$(CURDIR)/cmd/$(BINARY_NAME)" && $(GOBUILD) -o $(BINARY_NAME) -v
 	@if ! [ -d "bin" ]; then \
 		mkdir bin; \
@@ -30,6 +31,5 @@ run:
 
 deps:
 	@echo Gathering dependencies:
-	$(GOGET) -u -v "github.com/urfave/cli"
-	$(GOGET) -u -v "gopkg.in/yaml.v2"
+	$(GOGET) -t -v ./...
 	@echo Dependencies up to date!
