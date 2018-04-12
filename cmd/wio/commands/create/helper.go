@@ -155,6 +155,8 @@ func genericUpdate(projectType ProjectTypes, cliArgs *types.CliArgs) (error) {
         Verb.Verbose("* Using configurations from the current wio.yml file\n")
     }
 
+    Verb.Verbose("* Filled/Updated template written back to the file\n")
+
     Verb.Verbose("* Creating CMake files for all the targets and libraries\n")
     if cliArgs.AppType == "app" {
         if fillConfig {
@@ -163,6 +165,11 @@ func genericUpdate(projectType ProjectTypes, cliArgs *types.CliArgs) (error) {
         targetsTag = configApp.TargetsTag
         librariesTag = configApp.LibrariesTag
 
+        Verb.Verbose("* Pretty Printing the wio.yml file\n")
+        if err := utils.PrettyPrintConfig(&configApp, cliArgs.Directory+Sep+"wio.yml"); err != nil {
+            return err
+        }
+
         return cmake.HandleCMakeCreation(cliArgs.Directory, cliArgs.Framework, targetsTag, librariesTag, false, nil)
     } else if cliArgs.AppType == "lib" {
         if fillConfig {
@@ -170,6 +177,11 @@ func genericUpdate(projectType ProjectTypes, cliArgs *types.CliArgs) (error) {
         }
         targetsTag = configLib.TargetsTag
         librariesTag = configLib.LibrariesTag
+
+        Verb.Verbose("* Pretty Printing the wio.yml file\n")
+        if err := utils.PrettyPrintConfig(&configLib, cliArgs.Directory+Sep+"wio.yml"); err != nil {
+            return err
+        }
 
         return cmake.HandleCMakeCreation(cliArgs.Directory, cliArgs.Framework, targetsTag, librariesTag, true, configLib.MainTag.Compile_flags)
     }

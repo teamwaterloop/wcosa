@@ -45,7 +45,7 @@
     {
       "id": "lib-gen",
       "src": "templates/sample-program/lib/lib.h",
-      "des": "{{PRJ-ROOT}}/src/lib.h",
+      "des": "{{PRJ-ROOT}}/include/lib.h",
       "override": false
     },
     {

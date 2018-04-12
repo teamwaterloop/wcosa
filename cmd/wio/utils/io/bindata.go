@@ -89,7 +89,7 @@ func (fi bindataFileInfo) Sys() interface{} {
 	return nil
 }
 
-var _assetsConfigCreate_pathsJson = "\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xcc\x94\x4d\x4b\xc3\x40\x10\x86\xef\xf9\x15\xc3\x9e\x9b\xec\xbd\x57\x6f\xa2\xb4\x14\x6f\xe2\x61\x9b\x4c\xd3\xd1\x4d\x76\xd8\x1d\xab\x12\xf2\xdf\x65\x03\x5a\x5b\x4b\xd3\x0f\xdb\x78\x48\x08\xc3\x3b\xe1\x61\x97\xf7\x69\x12\x00\xc5\x46\x96\x41\x8d\xe1\x31\x01\x00\x68\xba\x37\x80\xa2\x42\x8d\x41\x19\xe6\xb4\xc4\x5a\x8d\xbe\xc6\xc1\xe7\x71\x2e\x58\xb1\x35\x82\x41\xe7\xae\x5e\x50\xa9\xd9\xbb\x67\xcc\x25\x35\xcc\xd9\x47\x65\xd7\x0b\x05\xc6\x9f\xab\xa6\x99\xce\x6e\xd3\xd9\x64\xf2\xd0\xb6\xfa\x8d\xdc\x66\xc8\xad\xd0\x7b\x2a\x50\x8d\x61\x61\x6c\xc0\x6e\xde\x8e\x4e\x23\x0a\xa6\x62\x8b\x29\x7b\x57\x7a\x53\x69\xc3\xac\x2b\x43\x75\x96\x33\xef\xc7\x0a\x3e\xdf\x91\xfc\x53\xb6\x92\x84\xca\xda\x79\xd4\xd9\xf7\x67\x5c\x41\x6f\x7a\xce\x6c\x9d\x3f\x19\x2d\xb7\xe4\x8e\x86\xdb\x5a\x1a\x08\x8d\x0a\xd4\x5d\xa6\xbb\xce\x9b\x7b\xf3\x82\x77\x14\x24\x64\xf2\x2e\x99\x70\xcf\xd9\x6d\xe6\xaf\x0e\x39\xf5\xb4\x32\x82\xc7\xb2\xfe\x58\xdb\x89\x2c\xfe\x75\x1f\xb1\xa5\xf9\x71\xd5\xb5\x34\xbf\x6c\x75\xfb\x89\xb6\xaa\x6b\x69\x1e\x9f\x6c\xd9\xdf\xdb\xad\xd8\x35\xa8\x0e\xf2\xc9\xaf\xe0\xa5\xc9\x0e\x53\x9d\x60\x90\xf3\x5c\xd7\x0f\x37\x98\xeb\x22\xda\x3f\x75\xdd\x21\x68\x6b\x8d\xc4\xfb\x1c\xc0\x75\xe7\x40\x5e\xdc\x75\x09\xc0\x53\xd2\x26\x9f\x01\x00\x00\xff\xff\xc9\xac\xd2\x8f\xbb\x08\x00\x00"
+var _assetsConfigCreate_pathsJson = "\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\xff\xcc\xd4\x3f\x6b\xf3\x30\x10\x06\xf0\xdd\x9f\xe2\xd0\x1c\x5b\x7b\xd6\x77\x7b\x69\x49\x08\xdd\x4a\x07\x45\xbe\x38\xd7\xca\xd6\x21\x5d\xd2\x16\xe3\xef\x5e\x6c\x68\xd3\xa4\x21\xce\x9f\x26\xee\x60\x63\xc4\x73\xe6\x87\x84\x9e\x3a\x01\x50\x6c\x64\x19\xd5\x18\x1e\x13\x00\x80\xba\x7b\x03\x28\xca\xd5\x18\x94\x61\x4e\x0b\xac\xd4\xe8\x73\x39\x06\xdb\xae\x0b\x96\xec\x8c\x60\xd4\xd6\x57\x0b\x2a\x34\x07\xff\x8c\x56\x52\xc3\x9c\xbd\x97\x6e\x33\x90\x63\xfb\x73\x55\xd7\xd3\xd9\xff\x74\x36\x99\x3c\x34\x8d\x7e\x25\xbf\x1d\xf2\x6b\x0c\x81\x72\x54\x63\x58\x18\x17\xb1\x5b\x6f\x46\xe7\x89\xa2\x29\xd9\x61\xca\xc1\x17\xc1\x94\xda\x30\xeb\xd2\x50\x95\x59\xe6\xc3\xac\x18\xec\x9e\xe4\xaf\xda\x0a\x12\x2a\x2a\x1f\x50\x67\x5f\x9f\xed\x08\x06\xd3\xb3\x67\x9b\xfc\xd9\x34\xeb\xc8\x9f\x8c\xdb\x19\x1a\x88\x46\x39\xea\x2e\xd3\x1d\xe7\xbf\x7b\xf3\x82\x77\x14\x25\x66\xf2\x26\x99\x70\xcf\xde\x6d\xe7\x6f\x8e\x9c\x06\x5a\x1b\xc1\x53\xad\xdf\xc6\xf6\x92\x25\xac\x0e\x89\x1d\xcd\x4f\xbb\xba\x8e\xe6\xd7\xbd\xba\xfd\xa2\x9d\xab\xeb\x68\xde\x3e\xd9\xf2\xb0\x89\x2a\xeb\x56\x39\xee\x46\x6f\x21\x3b\xaa\x53\x7e\x04\xaf\x2d\x3b\xae\xee\x04\xa3\x5c\xd6\x77\xfd\xb8\xc1\xfa\xae\xa5\xfd\xd1\xbe\x3b\x86\xb6\xa9\x92\xf6\x3c\x07\xe8\xbb\x4b\x90\x57\xef\xbb\x04\xe0\x29\x69\x92\x8f\x00\x00\x00\xff\xff\x0a\x01\x85\x67\xbf\x08\x00\x00"
 
 func assetsConfigCreate_pathsJsonBytes() ([]byte, error) {
 	return bindataRead(
@@ -104,7 +104,7 @@ func assetsConfigCreate_pathsJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/config/create_paths.json", size: 2235, mode: os.FileMode(420), modTime: time.Unix(1523503118, 0)}
+	info := bindataFileInfo{name: "assets/config/create_paths.json", size: 2239, mode: os.FileMode(420), modTime: time.Unix(1523554059, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -164,7 +164,7 @@ func assetsConfigUpdate_pathsJson() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/config/update_paths.json", size: 1618, mode: os.FileMode(420), modTime: time.Unix(1523537620, 0)}
+	info := bindataFileInfo{name: "assets/config/update_paths.json", size: 1618, mode: os.FileMode(420), modTime: time.Unix(1523553906, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -184,7 +184,7 @@ func assetsTemplatesCmakeCmakelistsTxtTpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/cmake/CMakeLists.txt.tpl", size: 429, mode: os.FileMode(420), modTime: time.Unix(1523551244, 0)}
+	info := bindataFileInfo{name: "assets/templates/cmake/CMakeLists.txt.tpl", size: 429, mode: os.FileMode(420), modTime: time.Unix(1523553906, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -204,7 +204,7 @@ func assetsTemplatesCmakeCmakelistslibTxtTpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/cmake/CMakeListsLib.txt.tpl", size: 725, mode: os.FileMode(420), modTime: time.Unix(1523552449, 0)}
+	info := bindataFileInfo{name: "assets/templates/cmake/CMakeListsLib.txt.tpl", size: 725, mode: os.FileMode(420), modTime: time.Unix(1523553906, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -224,7 +224,7 @@ func assetsTemplatesCmakeCmakeliststargetTxt() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/cmake/CMakeListsTarget.txt", size: 478, mode: os.FileMode(420), modTime: time.Unix(1523541302, 0)}
+	info := bindataFileInfo{name: "assets/templates/cmake/CMakeListsTarget.txt", size: 478, mode: os.FileMode(420), modTime: time.Unix(1523553906, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -244,7 +244,7 @@ func assetsTemplatesConfigLibsHelpTxt() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/config/libs-help.txt", size: 270, mode: os.FileMode(420), modTime: time.Unix(1522545706, 0)}
+	info := bindataFileInfo{name: "assets/templates/config/libs-help.txt", size: 270, mode: os.FileMode(420), modTime: time.Unix(1523553906, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -264,7 +264,7 @@ func assetsTemplatesConfigLibsYml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/config/libs.yml", size: 318, mode: os.FileMode(420), modTime: time.Unix(1522598676, 0)}
+	info := bindataFileInfo{name: "assets/templates/config/libs.yml", size: 318, mode: os.FileMode(420), modTime: time.Unix(1523553906, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -284,7 +284,7 @@ func assetsTemplatesConfigProjectAppYml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/config/project-app.yml", size: 163, mode: os.FileMode(420), modTime: time.Unix(1523503118, 0)}
+	info := bindataFileInfo{name: "assets/templates/config/project-app.yml", size: 163, mode: os.FileMode(420), modTime: time.Unix(1523553906, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -304,7 +304,7 @@ func assetsTemplatesConfigProjectLibYml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/config/project-lib.yml", size: 236, mode: os.FileMode(420), modTime: time.Unix(1523503118, 0)}
+	info := bindataFileInfo{name: "assets/templates/config/project-lib.yml", size: 236, mode: os.FileMode(420), modTime: time.Unix(1523553906, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -324,7 +324,7 @@ func assetsTemplatesConfigWioHelpTxt() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/config/wio-help.txt", size: 1835, mode: os.FileMode(420), modTime: time.Unix(1523503118, 0)}
+	info := bindataFileInfo{name: "assets/templates/config/wio-help.txt", size: 1835, mode: os.FileMode(420), modTime: time.Unix(1523553906, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -344,7 +344,7 @@ func assetsTemplatesGitignoreGitignoreClion() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/gitignore/.gitignore-clion", size: 54, mode: os.FileMode(420), modTime: time.Unix(1522260315, 0)}
+	info := bindataFileInfo{name: "assets/templates/gitignore/.gitignore-clion", size: 54, mode: os.FileMode(420), modTime: time.Unix(1523553906, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -364,7 +364,7 @@ func assetsTemplatesGitignoreGitignoreGeneral() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/gitignore/.gitignore-general", size: 6, mode: os.FileMode(420), modTime: time.Unix(1522260325, 0)}
+	info := bindataFileInfo{name: "assets/templates/gitignore/.gitignore-general", size: 6, mode: os.FileMode(420), modTime: time.Unix(1523553906, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -384,7 +384,7 @@ func assetsTemplatesIdeClionAppCmakelistsTxtTpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/ide/clion/app/CMakeLists.txt.tpl", size: 702, mode: os.FileMode(420), modTime: time.Unix(1521752364, 0)}
+	info := bindataFileInfo{name: "assets/templates/ide/clion/app/CMakeLists.txt.tpl", size: 702, mode: os.FileMode(420), modTime: time.Unix(1523553906, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -404,7 +404,7 @@ func assetsTemplatesIdeClionAppCmakelistsprivateTxtTpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/ide/clion/app/CMakeListsPrivate.txt.tpl", size: 809, mode: os.FileMode(420), modTime: time.Unix(1521752364, 0)}
+	info := bindataFileInfo{name: "assets/templates/ide/clion/app/CMakeListsPrivate.txt.tpl", size: 809, mode: os.FileMode(420), modTime: time.Unix(1523553906, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -424,7 +424,7 @@ func assetsTemplatesIdeClionLibCmakelistsTxtTpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/ide/clion/lib/CMakeLists.txt.tpl", size: 702, mode: os.FileMode(420), modTime: time.Unix(1521752364, 0)}
+	info := bindataFileInfo{name: "assets/templates/ide/clion/lib/CMakeLists.txt.tpl", size: 702, mode: os.FileMode(420), modTime: time.Unix(1523553906, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -444,7 +444,7 @@ func assetsTemplatesIdeClionLibCmakelistsprivateTxtTpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/ide/clion/lib/CMakeListsPrivate.txt.tpl", size: 809, mode: os.FileMode(420), modTime: time.Unix(1521752364, 0)}
+	info := bindataFileInfo{name: "assets/templates/ide/clion/lib/CMakeListsPrivate.txt.tpl", size: 809, mode: os.FileMode(420), modTime: time.Unix(1523553906, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -464,7 +464,7 @@ func assetsTemplatesSampleProgramAppMainCpp() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/sample-program/app/main.cpp", size: 202, mode: os.FileMode(420), modTime: time.Unix(1521752364, 0)}
+	info := bindataFileInfo{name: "assets/templates/sample-program/app/main.cpp", size: 202, mode: os.FileMode(420), modTime: time.Unix(1523553906, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -484,7 +484,7 @@ func assetsTemplatesSampleProgramLibLibCpp() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/sample-program/lib/lib.cpp", size: 0, mode: os.FileMode(420), modTime: time.Unix(1522258405, 0)}
+	info := bindataFileInfo{name: "assets/templates/sample-program/lib/lib.cpp", size: 0, mode: os.FileMode(420), modTime: time.Unix(1523553906, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -504,7 +504,7 @@ func assetsTemplatesSampleProgramLibLibH() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/sample-program/lib/lib.h", size: 0, mode: os.FileMode(420), modTime: time.Unix(1522258398, 0)}
+	info := bindataFileInfo{name: "assets/templates/sample-program/lib/lib.h", size: 0, mode: os.FileMode(420), modTime: time.Unix(1523553906, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -524,7 +524,7 @@ func assetsTemplatesSampleProgramLibMainCpp() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/sample-program/lib/main.cpp", size: 0, mode: os.FileMode(420), modTime: time.Unix(1522258388, 0)}
+	info := bindataFileInfo{name: "assets/templates/sample-program/lib/main.cpp", size: 0, mode: os.FileMode(420), modTime: time.Unix(1523553906, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
