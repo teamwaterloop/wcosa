@@ -1,3 +1,0 @@
-
-void walk();
-void kill();
