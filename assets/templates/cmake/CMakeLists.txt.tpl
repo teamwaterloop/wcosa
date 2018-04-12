@@ -6,11 +6,11 @@ set(CMAKE_TOOLCHAIN_FILE "{{toolchain-path}}")
 cmake_minimum_required(VERSION ${VER})
 project(${NAME} C CXX ASM)
 
-file(GLOB_RECURSE SRC_FILES "{{project-path}}/src/*.cpp" "{{project-path}}/src/*.cc" "{{project-path}}/src/*.c")
+file(GLOB_RECURSE SRC_FILES "../src/*.cpp" "../src/*.cc" "../src/*.c")
 
 # create the firmware
 generate_arduino_firmware({{target-name}}
     SRCS ${SRC_FILES}
     BOARD {{board}})
-target_compile_definitions({{target-name}} PRIVATE __AVR_{{framework}}__ {{flags}})
+target_compile_definitions({{target-name}} PRIVATE __AVR_{{framework}}__ {{target-flags}})
 

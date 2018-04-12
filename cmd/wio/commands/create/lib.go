@@ -18,7 +18,7 @@ import (
 // Creates project structure for library type
 func (lib Lib) createStructure() (error) {
     Verb.Verbose("\n")
-    if err := createStructure(lib.args.Directory, "src", "lib", "test", ".wio/targets"); err != nil {
+    if err := createStructure(lib.args.Directory, "src", "lib", "test", "include", ".wio/targets"); err != nil {
         return err
     }
 
@@ -47,7 +47,10 @@ func (lib Lib) createTemplateProject() (error) {
 
     config = inf.(*types.LibConfig)
 
-    return HandleCMakeCreation(lib.args.Directory, lib.args.Framework, config.TargetsTag, config.LibrariesTag)
+    config.LibrariesTag[filepath.Base(lib.args.Directory)] = &types.LibraryTag{}
+    config.LibrariesTag[filepath.Base(lib.args.Directory)].Compile_flags = config.MainTag.Compile_flags
+
+    return HandleCMakeCreation(lib.args.Directory, lib.args.Framework, config.TargetsTag, config.LibrariesTag, true, config.MainTag.Compile_flags)
 }
 
 // Prints all the commands relevant to library type
@@ -58,7 +61,7 @@ func (lib Lib) printNextCommands() {
     Norm.Cyan("`wio test -h`\n")
 }
 
-// Handles config file for lib
+// Fill config file for lib
 func (lib Lib) FillConfig() (interface{}, error) {
     Verb.Verbose("* Loaded wio.yml file template\n")
 
@@ -99,6 +102,7 @@ func (lib Lib) FillConfig() (interface{}, error) {
     return &libConfig, nil
 }
 
+// Handles the update of lib
 func (lib Lib) update() (error) {
     return genericUpdate(lib, lib.args)
 }

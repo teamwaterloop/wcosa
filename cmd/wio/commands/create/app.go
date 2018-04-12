@@ -55,7 +55,7 @@ func (app App) createTemplateProject() (error) {
 
     config = inf.(*types.AppConfig)
 
-    return HandleCMakeCreation(app.args.Directory, app.args.Framework, config.TargetsTag, config.LibrariesTag)
+    return HandleCMakeCreation(app.args.Directory, app.args.Framework, config.TargetsTag, config.LibrariesTag, false, nil)
 }
 
 // Prints all the commands relevant to application type
@@ -69,7 +69,7 @@ func (app App) printNextCommands() {
     }
 }
 
-// Handles config file for app
+// Fill config file for the app
 func (app App) FillConfig() (interface{}, error) {
     Verb.Verbose("* Loaded wio.yml file template\n")
 
@@ -110,6 +110,7 @@ func (app App) FillConfig() (interface{}, error) {
     return &appConfig, nil
 }
 
+// Handles the update of app
 func (app App) update() (error) {
     return genericUpdate(app, app.args)
 }

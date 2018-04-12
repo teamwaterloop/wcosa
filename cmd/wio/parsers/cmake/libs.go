@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-// Part of parsers/libs package, which contains parser to parse libraries and their dependencies
+// Part of parsers/cmake package, which contains parser to create cmake files
 // This file parses dependencies and creates CMakeLists.txt file for each of them
 package cmake
 
@@ -162,7 +162,7 @@ func createCMakes(exePath string, projectPath string, board string, framework st
         return err
     }
 
-    librariesTemplate, err := io.AssetIO.ReadFile("templates" + io.Sep + "cmake" + io.Sep + "CMakeListsLib.txt")
+    librariesTemplate, err := io.AssetIO.ReadFile("templates" + io.Sep + "cmake" + io.Sep + "CMakeListsTarget.txt")
     if err != nil {
         return err
     }

@@ -100,6 +100,7 @@ func AppendIfMissing(slice []string, i string) []string {
     return append(slice, i)
 }
 
+// Generic update updates the project. This is a generic method used by both app and lib
 func genericUpdate(projectType ProjectTypes, cliArgs *types.CliArgs) (error) {
     wioFile := cliArgs.Directory + Sep + "wio.yml"
     configApp := &types.AppConfig{}
@@ -154,20 +155,24 @@ func genericUpdate(projectType ProjectTypes, cliArgs *types.CliArgs) (error) {
         Verb.Verbose("* Using configurations from the current wio.yml file\n")
     }
 
+    Verb.Verbose("* Creating CMake files for all the targets and libraries\n")
     if cliArgs.AppType == "app" {
         if fillConfig {
             configApp = config.(*types.AppConfig)
         }
         targetsTag = configApp.TargetsTag
         librariesTag = configApp.LibrariesTag
+
+        return cmake.HandleCMakeCreation(cliArgs.Directory, cliArgs.Framework, targetsTag, librariesTag, false, nil)
     } else if cliArgs.AppType == "lib" {
         if fillConfig {
             configLib = config.(*types.LibConfig)
         }
-        targetsTag = configApp.TargetsTag
-        librariesTag = configApp.LibrariesTag
+        targetsTag = configLib.TargetsTag
+        librariesTag = configLib.LibrariesTag
+
+        return cmake.HandleCMakeCreation(cliArgs.Directory, cliArgs.Framework, targetsTag, librariesTag, true, configLib.MainTag.Compile_flags)
     }
 
-    Verb.Verbose("* Creating CMake files for all the targets and libraries\n")
-    return cmake.HandleCMakeCreation(cliArgs.Directory, cliArgs.Framework, targetsTag, librariesTag)
+    return nil
 }

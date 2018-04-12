@@ -4,7 +4,6 @@
 
 // Part of commands/create package, which contains create command and sub commands provided by the tool.
 // Types for all the things being used in this package
-
 package create
 
 import . "wio/cmd/wio/utils/types"
