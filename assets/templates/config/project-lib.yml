@@ -11,12 +11,7 @@ lib:
 
 targets:
   default: test
-  test:
-    board: board
-    compile_flags: []
-
-dependencies:
-  name:
-    ur:
-    branch: null
-    compile_flags: []
+  created:
+    test:
+      board: board
+      compile_flags: []

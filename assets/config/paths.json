@@ -3,14 +3,8 @@
     {
       "id": "app-gen",
       "src": "templates/config/project-app.yml",
-      "des": "{{PRJ-ROOT}}/project.yml",
+      "des": "{{PRJ-ROOT}}/wio.yml",
       "override": false
-    },
-    {
-      "id": "app-gen",
-      "src": "templates/cmake/CMakeLists.txt.tpl",
-      "des": "{{PRJ-ROOT}}/.wio/CMakeLists.txt",
-      "override": true
     },
     {
       "id": "app-gen",
@@ -45,14 +39,8 @@
     {
       "id": "lib-gen",
       "src": "templates/config/project-lib.yml",
-      "des": "{{PRJ-ROOT}}/project.yml",
+      "des": "{{PRJ-ROOT}}/wio.yml",
       "override": false
-    },
-    {
-      "id": "lib-gen",
-      "src": "templates/cmake/CMakeLists.txt.tpl",
-      "des": "{{PRJ-ROOT}}/.wio/CMakeLists.txt",
-      "override": true
     },
     {
       "id": "lib-gen",

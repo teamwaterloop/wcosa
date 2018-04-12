@@ -42,8 +42,8 @@ func writeProjectConfig(lines []string, path string) error {
 }
 
 // Write configuration for the project with information on top and nice spacing
-func PrettyPrintConfig(projectType string, projectConfig interface{}, filePath string) (error) {
-    infoPath := "templates" + Sep + "config" + Sep + "project-" + projectType + "-help"
+func PrettyPrintConfig(projectConfig interface{}, filePath string) (error) {
+    infoPath := "templates" + Sep + "config" + Sep + "wio-help.txt"
 
     var ymlData []byte
     var infoData []byte
@@ -53,13 +53,45 @@ func PrettyPrintConfig(projectType string, projectConfig interface{}, filePath s
     if ymlData, err = yaml.Marshal(projectConfig); err != nil { return err }
     if infoData, err = AssetIO.ReadFile(infoPath); err != nil { return err }
 
-    infoDataSlice :=  strings.Split(string(infoData), "\n")
-    totalConfig := make([]string, 0)
-    totalConfig = append(totalConfig, infoDataSlice...)
-    totalConfig = append(totalConfig, string(ymlData))
+    finalString := ""
+    currentString := strings.Split(string(ymlData), "\n")
 
-    if err = os.Remove(filePath); err != nil { return err }
+    infoDataSlice :=  strings.Split(string(infoData), "\n\n")
+    beautify := false
+    first := false
 
-    err = writeProjectConfig(totalConfig, filePath)
+    for line := range currentString {
+        currLine := currentString[line]
+
+        if len(currLine) <= 1 {
+            continue
+        }
+
+        if strings.Contains(currLine, "app:") {
+            finalString += infoDataSlice[0] + "\n"
+        } else if strings.Contains(currLine, "lib:") {
+            finalString += infoDataSlice[1] + "\n"
+        } else if strings.Contains(currLine, "targets:") {
+            finalString += "\n" + infoDataSlice[2] + "\n"
+        } else if strings.Contains(currLine, "created:") {
+            beautify = true
+        } else if strings.Contains(currLine, "libraries:") {
+            first = false
+            finalString += "\n"
+        } else if beautify && !first {
+            first = true
+        } else if beautify {
+            simpleString := strings.Trim(currLine, " ")
+
+            if simpleString[len(simpleString) - 1] == ':' {
+                finalString += "\n"
+            }
+        }
+
+        finalString += currLine + "\n"
+    }
+
+    err = NormalIO.WriteFile(filePath, []byte(finalString))
+
     return err
 }

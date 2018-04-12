@@ -86,7 +86,7 @@ func copyTemplates(cliArgs *types.CliArgs) (error) {
 
 // Generic method to copy cmake files for each target
 func copyTargetCMakes(projectPath string, targets types.TargetsTag) {
-    for target := range targets {
+    for target := range targets.Targets {
         srcPath := "templates/cmake/CMakeTarget.cmake.tpl"
         destPath := projectPath + Sep + ".wio" + Sep + "targets" + Sep + target + ".cmake"
         AssetIO.CopyFile(srcPath, destPath, true)

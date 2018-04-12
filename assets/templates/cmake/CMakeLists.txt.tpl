@@ -1,10 +1,16 @@
-# define toolchain path, project name and version
-set(TOOLCHAIN_PATH "{{toolchain-path}}")
-set(VER {{cmake-version}})
+set(VER 3.0.0)
 set(NAME {{project-name}})
 
-# include the file for the target we are building
-include({{target-path}})
+set(CMAKE_TOOLCHAIN_FILE "{{toolchain-path}}")
 
 cmake_minimum_required(VERSION ${VER})
 project(${NAME} C CXX ASM)
+
+file(GLOB_RECURSE SRC_FILES "{{project-path}}/src/*.cpp" "{{project-path}}/src/*.cc" "{{project-path}}/src/*.c")
+
+# create the firmware
+generate_arduino_firmware({{target-name}}
+    SRCS ${SRC_FILES}
+    BOARD {{board}})
+target_compile_definitions({{target-name}} PRIVATE __AVR_{{framework}}__ {{flags}})
+

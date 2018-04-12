@@ -10,22 +10,18 @@
 
 import (
     "wio/cmd/wio/utils/io"
-    "wio/cmd/wio/parsers/libs"
+    "github.com/urfave/cli"
+    "log"
+    "time"
+    "fmt"
+    "os"
+    "path/filepath"
+    . "wio/cmd/wio/utils/types"
+    commandCreate "wio/cmd/wio/commands/create"
 )
 
 //go:generate go-bindata -nomemcopy -prefix ../../ ../../assets/config/... ../../assets/templates/...
 func main()  {
-
-    //config, _ := libs.ParseLibs("/Users/deep/Development/gowork/src/wio/hello")
-    //spew.Dump(config)
-
-    //fmt.Println()
-    //libs.WriteLibs("/Users/deep/Development/gowork/src/wio/hello", config)
-
-    libs.PopulateCMakeFilesforLibs("/Users/deep/Development/gowork/src/wio/hello", "uno", "hello")
-
-    return
-    /*
     // override help template
     cli.AppHelpTemplate =
 `Wio a simplified development process for embedded applications.
@@ -444,7 +440,6 @@ Run "wio help" to see global options.
     if err != nil {
         log.Fatal(err)
     }
-    */
 }
 
 // Set's verbose mode on

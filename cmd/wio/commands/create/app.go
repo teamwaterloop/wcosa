@@ -12,6 +12,7 @@ import (
     . "wio/cmd/wio/utils/io"
     . "wio/cmd/wio/utils"
     "wio/cmd/wio/utils/types"
+    . "wio/cmd/wio/parsers/cmake"
 )
 
 
@@ -48,11 +49,16 @@ func (app App) createTemplateProject() (error) {
     if err = copyTemplates(app.args); err != nil { return err }
     if config, err = app.FillConfig(); err != nil { return err }
 
-    // create cmake files for each target
-    copyTargetCMakes(app.args.Directory, config.MainTag.Targets)
+    for target := range config.TargetsTag.Targets {
+        // create cmake files for each target libraries
+        if err = PopulateCMakeFilesForLibs(app.args.Directory, app.args.Board, target, config.LibrariesTag); err != nil {
+            return err
+        }
+    }
 
-    // fill cmake
-    app.FillCMake(config)
+    CreateMainCMakeListsFile(app.args.Directory, config.TargetsTag.Targets[config.TargetsTag.Default_target].Board,
+        app.args.Framework, config.TargetsTag.Default_target,
+            config.TargetsTag.Targets[config.TargetsTag.Default_target].Compile_flags)
 
     return nil
 }
@@ -70,10 +76,10 @@ func (app App) printNextCommands() {
 
 // Handles config file for app
 func (app App) FillConfig() (*types.AppConfig, error) {
-    Verb.Verbose("* Loaded Project.yml file template\n")
+    Verb.Verbose("* Loaded wio.yml file template\n")
 
     appConfig := types.AppConfig{}
-    if err := NormalIO.ParseYml(app.args.Directory + Sep + "project.yml", &appConfig);
+    if err := NormalIO.ParseYml(app.args.Directory + Sep + "wio.yml", &appConfig);
     err != nil { return nil, err }
 
     // make modifications to the data
@@ -82,60 +88,25 @@ func (app App) FillConfig() (*types.AppConfig, error) {
     appConfig.MainTag.Framework = app.args.Framework
     appConfig.MainTag.Name = filepath.Base(app.args.Directory)
 
-    if appConfig.MainTag.Default_target == "" {
-        appConfig.MainTag.Default_target = "main"
+    if appConfig.TargetsTag.Default_target == "" {
+        appConfig.TargetsTag.Default_target = "main"
     }
 
-    if target, ok := appConfig.MainTag.Targets[appConfig.MainTag.Default_target]; ok {
-        defaultTarget := &types.TargetSubTags{}
+    if target, ok := appConfig.TargetsTag.Targets[appConfig.TargetsTag.Default_target]; ok {
+        defaultTarget := &types.TargetTag{}
         defaultTarget.Board = app.args.Board
         defaultTarget.Compile_flags = target.Compile_flags
-        appConfig.MainTag.Targets[appConfig.MainTag.Default_target] = defaultTarget
+        appConfig.TargetsTag.Targets[appConfig.TargetsTag.Default_target] = defaultTarget
     } else {
-        appConfig.MainTag.Targets[appConfig.MainTag.Default_target] = &types.TargetSubTags{}
-        appConfig.MainTag.Targets[appConfig.MainTag.Default_target].Board = app.args.Board
+        appConfig.TargetsTag.Targets[appConfig.TargetsTag.Default_target] = &types.TargetTag{}
+        appConfig.TargetsTag.Targets[appConfig.TargetsTag.Default_target].Board = app.args.Board
     }
-
-    // update libraries to include current libs
-    updatedLibraries, err := app.UpdateConfigLibs(appConfig.LibrariesTag)
-    if err != nil {
-        return nil, err
-    }
-    appConfig.LibrariesTag = updatedLibraries
 
     Verb.Verbose("* Modified information in the configuration\n")
 
-    if err := PrettyPrintConfig(app.args.AppType, &appConfig, app.args.Directory + Sep + "project.yml");
+    if err := PrettyPrintConfig(&appConfig, app.args.Directory + Sep + "wio.yml");
     err != nil { return nil, err }
     Verb.Verbose("* Filled/Updated template written back to the file\n")
 
     return &appConfig, nil
-}
-
-func (app App) UpdateConfigLibs(projectLibraries types.LibrariesTag) (types.LibrariesTag, error) {
-    libs, err := GetLibrariesSlice(app.args.Directory)
-    if err != nil {
-        return nil, err
-    }
-
-    for lib := range libs {
-        if _, ok := projectLibraries[libs[lib].Name]; !ok {
-            projectLibraries[libs[lib].Name] = &types.LibrarySubTags{}
-        }
-        projectLibraries[libs[lib].Name].Url = "local"
-        projectLibraries[libs[lib].Name].Version = "0.0.0"
-    }
-
-    return projectLibraries, nil
-}
-
-func (app App) FillCMake(config *types.AppConfig) (error) {
-    for target := range config.MainTag.Targets {
-        librariesString, libraries := GetLibraries(config.MainTag.Targets[target].Board,
-            config.LibrariesTag, app.args.Directory)
-        WriteCMakeLibraries(librariesString, target, app.args.Directory)
-        WriteCMakeFramework(libraries, target, config.MainTag.Targets[target], app.args)
-    }
-
-    return nil
 }

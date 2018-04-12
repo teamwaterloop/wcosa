@@ -13,6 +13,7 @@ import (
     . "wio/cmd/wio/utils/io"
     . "wio/cmd/wio/utils"
     "wio/cmd/wio/utils/types"
+    . "wio/cmd/wio/parsers/cmake"
 )
 
 // Creates project structure for library type
@@ -40,8 +41,16 @@ func (lib Lib) createTemplateProject() (error) {
     if err = copyTemplates(lib.args); err != nil { return err }
     if config, err = lib.FillConfig(); err != nil { return err }
 
-    // create cmake files for each target
-    copyTargetCMakes(lib.args.Directory, config.MainTag.Targets)
+    for target := range config.TargetsTag.Targets {
+        // create cmake files for each target libraries
+        if err = PopulateCMakeFilesForLibs(lib.args.Directory, lib.args.Board, target, config.LibrariesTag); err != nil {
+            return err
+        }
+    }
+
+    CreateMainCMakeListsFile(lib.args.Directory, config.TargetsTag.Targets[config.TargetsTag.Default_target].Board,
+        lib.args.Framework, config.TargetsTag.Default_target,
+            config.TargetsTag.Targets[config.TargetsTag.Default_target].Compile_flags)
 
     return nil
 }
@@ -56,10 +65,10 @@ func (lib Lib) printNextCommands() {
 
 // Handles config file for lib
 func (lib Lib) FillConfig() (*types.LibConfig, error) {
-    Verb.Verbose("* Loaded Project.yml file template\n")
+    Verb.Verbose("* Loaded wio.yml file template\n")
 
     libConfig := types.LibConfig{}
-    if err := NormalIO.ParseYml(lib.args.Directory + Sep + "project.yml", &libConfig);
+    if err := NormalIO.ParseYml(lib.args.Directory + Sep + "wio.yml", &libConfig);
     err != nil { return nil, err }
 
     // make modifications to the data
@@ -68,16 +77,18 @@ func (lib Lib) FillConfig() (*types.LibConfig, error) {
     libConfig.MainTag.Framework = AppendIfMissing(libConfig.MainTag.Framework, lib.args.Framework)
     libConfig.MainTag.Name = filepath.Base(lib.args.Directory)
 
-    if libConfig.MainTag.Default_target == "" {
-        libConfig.MainTag.Default_target = "test"
+    if libConfig.TargetsTag.Default_target == "" {
+        libConfig.TargetsTag.Default_target = "test"
     }
 
-    libConfig.MainTag.Targets[libConfig.MainTag.Default_target] = &types.TargetSubTags{}
-    libConfig.MainTag.Targets[libConfig.MainTag.Default_target].Board = lib.args.Board
+    if libConfig.TargetsTag.Targets[libConfig.TargetsTag.Default_target].Board == "" {
+        libConfig.TargetsTag.Targets[libConfig.TargetsTag.Default_target] = &types.TargetTag{}
+        libConfig.TargetsTag.Targets[libConfig.TargetsTag.Default_target].Board = lib.args.Board
+    }
 
     Verb.Verbose("* Modified information in the configuration\n")
 
-    if err := PrettyPrintConfig(lib.args.AppType, &libConfig, lib.args.Directory + Sep + "project.yml");
+    if err := PrettyPrintConfig(&libConfig, lib.args.Directory + Sep + "wio.yml");
     err != nil { return nil, err }
     Verb.Verbose("* Filled/Updated template written back to the file\n")
 
