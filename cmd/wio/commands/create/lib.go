@@ -2,7 +2,6 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-
 // Part of commands/create package, which contains create command and sub commands provided by the tool.
 // Sub command of create which creates a library to be published
 package create
@@ -38,21 +37,17 @@ func (lib Lib) createTemplateProject() (error) {
     config := &types.LibConfig{}
     var err error
 
-    if err = copyTemplates(lib.args); err != nil { return err }
-    if config, err = lib.FillConfig(); err != nil { return err }
-
-    for target := range config.TargetsTag.Targets {
-        // create cmake files for each target libraries
-        if err = PopulateCMakeFilesForLibs(lib.args.Directory, lib.args.Board, target, config.LibrariesTag); err != nil {
-            return err
-        }
+    if err = copyTemplates(lib.args.Directory, lib.args.AppType, lib.args.Ide, "config"+Sep+"create_paths.json"); err != nil {
+        return err
+    }
+    inf, err := lib.FillConfig()
+    if err != nil {
+        return err
     }
 
-    CreateMainCMakeListsFile(lib.args.Directory, config.TargetsTag.Targets[config.TargetsTag.Default_target].Board,
-        lib.args.Framework, config.TargetsTag.Default_target,
-            config.TargetsTag.Targets[config.TargetsTag.Default_target].Compile_flags)
+    config = inf.(*types.LibConfig)
 
-    return nil
+    return HandleCMakeCreation(lib.args.Directory, lib.args.Framework, config.TargetsTag, config.LibrariesTag)
 }
 
 // Prints all the commands relevant to library type
@@ -64,12 +59,14 @@ func (lib Lib) printNextCommands() {
 }
 
 // Handles config file for lib
-func (lib Lib) FillConfig() (*types.LibConfig, error) {
+func (lib Lib) FillConfig() (interface{}, error) {
     Verb.Verbose("* Loaded wio.yml file template\n")
 
     libConfig := types.LibConfig{}
-    if err := NormalIO.ParseYml(lib.args.Directory + Sep + "wio.yml", &libConfig);
-    err != nil { return nil, err }
+    if err := NormalIO.ParseYml(lib.args.Directory+Sep+"wio.yml", &libConfig);
+        err != nil {
+        return nil, err
+    }
 
     // make modifications to the data
     libConfig.MainTag.Ide = lib.args.Ide
@@ -81,20 +78,27 @@ func (lib Lib) FillConfig() (*types.LibConfig, error) {
         libConfig.TargetsTag.Default_target = "test"
     }
 
-    if libConfig.TargetsTag.Targets[libConfig.TargetsTag.Default_target].Board == "" {
+    if target, ok := libConfig.TargetsTag.Targets[libConfig.TargetsTag.Default_target]; ok {
+        defaultTarget := &types.TargetTag{}
+        defaultTarget.Board = lib.args.Board
+        defaultTarget.Compile_flags = target.Compile_flags
+        libConfig.TargetsTag.Targets[libConfig.TargetsTag.Default_target] = defaultTarget
+    } else {
         libConfig.TargetsTag.Targets[libConfig.TargetsTag.Default_target] = &types.TargetTag{}
         libConfig.TargetsTag.Targets[libConfig.TargetsTag.Default_target].Board = lib.args.Board
     }
 
     Verb.Verbose("* Modified information in the configuration\n")
 
-    if err := PrettyPrintConfig(&libConfig, lib.args.Directory + Sep + "wio.yml");
-    err != nil { return nil, err }
+    if err := PrettyPrintConfig(&libConfig, lib.args.Directory+Sep+"wio.yml");
+        err != nil {
+        return nil, err
+    }
     Verb.Verbose("* Filled/Updated template written back to the file\n")
 
     return &libConfig, nil
 }
 
-func (lib Lib) FillCMake(paths map[string]string) (error) {
-    return nil
+func (lib Lib) update() (error) {
+    return genericUpdate(lib, lib.args)
 }

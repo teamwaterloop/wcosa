@@ -15,7 +15,6 @@ import (
     . "wio/cmd/wio/parsers/cmake"
 )
 
-
 // Creates project structure for application type
 func (app App) createStructure() (error) {
     Verb.Verbose("\n")
@@ -46,21 +45,17 @@ func (app App) createTemplateProject() (error) {
     config := &types.AppConfig{}
     var err error
 
-    if err = copyTemplates(app.args); err != nil { return err }
-    if config, err = app.FillConfig(); err != nil { return err }
-
-    for target := range config.TargetsTag.Targets {
-        // create cmake files for each target libraries
-        if err = PopulateCMakeFilesForLibs(app.args.Directory, app.args.Board, target, config.LibrariesTag); err != nil {
-            return err
-        }
+    if err = copyTemplates(app.args.Directory, app.args.AppType, app.args.Ide, "config"+Sep+"create_paths.json"); err != nil {
+        return err
+    }
+    inf, err := app.FillConfig()
+    if err != nil {
+        return err
     }
 
-    CreateMainCMakeListsFile(app.args.Directory, config.TargetsTag.Targets[config.TargetsTag.Default_target].Board,
-        app.args.Framework, config.TargetsTag.Default_target,
-            config.TargetsTag.Targets[config.TargetsTag.Default_target].Compile_flags)
+    config = inf.(*types.AppConfig)
 
-    return nil
+    return HandleCMakeCreation(app.args.Directory, app.args.Framework, config.TargetsTag, config.LibrariesTag)
 }
 
 // Prints all the commands relevant to application type
@@ -75,12 +70,14 @@ func (app App) printNextCommands() {
 }
 
 // Handles config file for app
-func (app App) FillConfig() (*types.AppConfig, error) {
+func (app App) FillConfig() (interface{}, error) {
     Verb.Verbose("* Loaded wio.yml file template\n")
 
     appConfig := types.AppConfig{}
-    if err := NormalIO.ParseYml(app.args.Directory + Sep + "wio.yml", &appConfig);
-    err != nil { return nil, err }
+    if err := NormalIO.ParseYml(app.args.Directory+Sep+"wio.yml", &appConfig);
+        err != nil {
+        return nil, err
+    }
 
     // make modifications to the data
     appConfig.MainTag.Ide = app.args.Ide
@@ -104,9 +101,15 @@ func (app App) FillConfig() (*types.AppConfig, error) {
 
     Verb.Verbose("* Modified information in the configuration\n")
 
-    if err := PrettyPrintConfig(&appConfig, app.args.Directory + Sep + "wio.yml");
-    err != nil { return nil, err }
+    if err := PrettyPrintConfig(&appConfig, app.args.Directory+Sep+"wio.yml");
+        err != nil {
+        return nil, err
+    }
     Verb.Verbose("* Filled/Updated template written back to the file\n")
 
     return &appConfig, nil
+}
+
+func (app App) update() (error) {
+    return genericUpdate(app, app.args)
 }

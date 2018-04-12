@@ -13,7 +13,6 @@ import (
     "path/filepath"
     "io/ioutil"
     "os"
-    "regexp"
     "strings"
     . "wio/cmd/wio/parsers"
 )
@@ -156,83 +155,42 @@ func chooseIncludePath(libraryPath string) (string) {
 }
 
 // Create CMakeLists file for each target
-func createCMakes(exePath string, projectPath string, board string, target string, depTree *DependencyTree) (error) {
+func createCMakes(exePath string, projectPath string, board string, framework string, target string, depTree *DependencyTree) (error) {
     wioLibPath := projectPath + io.Sep + ".wio" + io.Sep + "targets" + io.Sep + target + io.Sep + "libraries"
 
     if err := os.MkdirAll(wioLibPath+io.Sep+depTree.Config.Hash, os.ModePerm); err != nil {
         return err
     }
 
-    librariesTemplate := `# Cosa Toolchain
-set(CMAKE_TOOLCHAIN_FILE "{{WIO_PATH}}/toolchain/cmake/CosaToolchain.cmake")
-cmake_minimum_required(VERSION 3.0.0)
-project({{library-name}} C CXX ASM)
-
-file(GLOB_RECURSE {{glob-name}} {{glob-string}})
-generate_arduino_library({{library-name}}
-	SRCS ${{{glob-name}}}
-	BOARD uno)
-target_compile_definitions({{library-name}} PRIVATE __AVR_Cosa__ {{compile-flags}})
-include_directories({{lib-path}})
-`
+    librariesTemplate, err := io.AssetIO.ReadFile("templates" + io.Sep + "cmake" + io.Sep + "CMakeListsLib.txt")
+    if err != nil {
+        return err
+    }
+    librariesTemplateStr := string(librariesTemplate)
 
     for i := 0; i < len(depTree.Child); i++ {
-        err := createCMakes(exePath, projectPath, board, target, depTree.Child[i])
+        err := createCMakes(exePath, projectPath, board, framework, target, depTree.Child[i])
         if err != nil {
             return nil
         }
     }
 
-    var wioPathRe *regexp.Regexp
-    var libraryNameRe *regexp.Regexp
-    var globNameRe *regexp.Regexp
-    var globStringRe *regexp.Regexp
-    var compileFLagsRe *regexp.Regexp
-    var libPathRe *regexp.Regexp
-    var err error
-
-    if wioPathRe, err = regexp.Compile(`{{WIO_PATH}}`); err != nil {
-        return err
-    }
-    if libraryNameRe, err = regexp.Compile(`{{library-name}}`); err != nil {
-        return err
-    }
-    if globNameRe, err = regexp.Compile(`{{glob-name}}`); err != nil {
-        return err
-    }
-    if globStringRe, err = regexp.Compile(`{{glob-string}}`); err != nil {
-        return err
-    }
-    if compileFLagsRe, err = regexp.Compile(`{{compile-flags}}`); err != nil {
-        return err
-    }
-    if libPathRe, err = regexp.Compile(`{{lib-path}}`); err != nil {
-        return err
-    }
-
-    librariesTemplate = wioPathRe.ReplaceAllString(librariesTemplate, exePath)
-    librariesTemplate = libraryNameRe.ReplaceAllString(librariesTemplate, depTree.Config.Hash)
-    librariesTemplate = globNameRe.ReplaceAllString(librariesTemplate,
-        strings.ToUpper(depTree.Config.Hash+"_SRC_FILES"))
-
-    srcPath := depTree.Config.Path + io.Sep + "src"
-    if utils.PathExists(srcPath) {
-        librariesTemplate = globStringRe.ReplaceAllString(librariesTemplate, srcPath+"/*.cpp "+srcPath+"/*.cc "+srcPath+"/*.c")
-    } else {
-        librariesTemplate = globStringRe.ReplaceAllString(librariesTemplate, depTree.Config.Path+"/*.cpp "+depTree.Config.Path+"/*.cc "+depTree.Config.Path+"/*.c")
-    }
-
-    librariesTemplate = compileFLagsRe.ReplaceAllString(librariesTemplate, strings.Join(depTree.Config.Compile_flags, " "))
-    librariesTemplate = libPathRe.ReplaceAllString(librariesTemplate, chooseIncludePath(depTree.Config.Path))
-    librariesTemplate += "\n"
+    librariesTemplateStr = strings.Replace(librariesTemplateStr, "{{WIO_PATH}}", exePath, -1)
+    librariesTemplateStr = strings.Replace(librariesTemplateStr, "{{library-name}}", depTree.Config.Hash, -1)
+    librariesTemplateStr = strings.Replace(librariesTemplateStr, "{{lib-path}}", depTree.Config.Path, -1)
+    librariesTemplateStr = strings.Replace(librariesTemplateStr, "{{board}}", board, -1)
+    librariesTemplateStr = strings.Replace(librariesTemplateStr, "{{framework}}", strings.ToUpper(framework), -1)
+    librariesTemplateStr = strings.Replace(librariesTemplateStr, "{{compile-flags}}",
+        strings.Join(depTree.Config.Compile_flags, " "), -1)
+    librariesTemplateStr += "\n"
 
     for dep := range depTree.Child {
-        librariesTemplate += "include_directories(" + chooseIncludePath(depTree.Child[dep].Config.Path) + ")\n"
-        librariesTemplate += "target_link_libraries(" + depTree.Config.Hash + " ${CMAKE_SOURCE_DIR}/../" +
-            depTree.Child[dep].Config.Hash + io.Sep + "lib" + depTree.Child[dep].Config.Hash + ".a)\n\n"
+        librariesTemplateStr += "include_directories(\"" + chooseIncludePath(depTree.Child[dep].Config.Path) + "\")\n"
+        librariesTemplateStr += "target_link_libraries(" + depTree.Config.Hash + " \"${CMAKE_SOURCE_DIR}/../" +
+            depTree.Child[dep].Config.Hash + io.Sep + "lib" + depTree.Child[dep].Config.Hash + ".a\")\n\n"
     }
 
-    io.NormalIO.WriteFile(wioLibPath+io.Sep+depTree.Config.Hash+io.Sep+"CMakeLists.txt", []byte(librariesTemplate))
+    io.NormalIO.WriteFile(wioLibPath+io.Sep+depTree.Config.Hash+io.Sep+"CMakeLists.txt", []byte(librariesTemplateStr))
 
     executionWayFileName := projectPath + io.Sep + ".wio" + io.Sep + "targets" + io.Sep + target + io.Sep + executionWayFile
 
@@ -251,7 +209,7 @@ include_directories({{lib-path}})
 }
 
 // Parsers each library and its dependency and then populate libraries CMakes for each target
-func PopulateCMakeFilesForLibs(projectPath string, board string, target string, libTag types.LibrariesTag) (error) {
+func PopulateCMakeFilesForLibs(projectPath string, board string, framework string, target string, libTag types.LibrariesTag) (error) {
     dependencyTree, err := createLibsLockFile(projectPath, libTag)
 
     exePath, err := io.NormalIO.GetRoot()
@@ -275,7 +233,7 @@ func PopulateCMakeFilesForLibs(projectPath string, board string, target string, 
     }
 
     for tree := range dependencyTree {
-        if err = createCMakes(exePath, projectPath, board, target, dependencyTree[tree]); err != nil {
+        if err = createCMakes(exePath, projectPath, board, framework, target, dependencyTree[tree]); err != nil {
             return err
         }
     }

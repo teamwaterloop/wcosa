@@ -2,7 +2,6 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-
 // Part of commands/create package, which contains create command and sub commands provided by the tool.
 // This contains helper function for generic template parsing and creating the project
 package create
@@ -14,13 +13,19 @@ import (
     . "wio/cmd/wio/utils/io"
     "os"
     "wio/cmd/wio/utils/types"
+    "wio/cmd/wio/utils"
+    "wio/cmd/wio/parsers/cmake"
+    "strings"
+    "errors"
 )
 
 // Parses the paths.json file and uses that to get paths to copy files to and from
 // It also stores all the paths as a map to be used later on
 func parsePathsAndCopy(jsonPath string, projectPath string, tags []string) (error) {
     var paths = Paths{}
-    if err := AssetIO.ParseJson(jsonPath, &paths); err != nil { return err }
+    if err := AssetIO.ParseJson(jsonPath, &paths); err != nil {
+        return err
+    }
 
     var re, e = regexp.Compile(`{{.+}}`)
     if e != nil {
@@ -58,39 +63,31 @@ func createStructure(projectPath string, relPaths ...string) (error) {
         if err := os.MkdirAll(fullPath, os.ModePerm); err != nil {
             return err
         }
-        Verb.Verbose(`* Created "` +  relPaths[path] + `" folder` + "\n")
+        Verb.Verbose(`* Created "` + relPaths[path] + `" folder` + "\n")
     }
 
     return nil
 }
 
 // generic method to copy templates based on command line arguments
-func copyTemplates(cliArgs *types.CliArgs) (error) {
+func copyTemplates(projectPath string, appType string, ide string, jsonPath string) (error) {
     strArray := make([]string, 1)
-    strArray[0] = cliArgs.AppType + "-gen"
+    strArray[0] = appType + "-gen"
 
     Verb.Verbose("\n")
-    if cliArgs.Ide == "clion" {
+    if ide == "clion" {
         Verb.Verbose("* Clion Ide available so ide template set up will be used\n")
-        strArray = append(strArray, cliArgs.AppType + "-clion")
+        strArray = append(strArray, appType+"-clion")
     } else {
         Verb.Verbose("* General template setup will be used\n")
     }
 
-    jsonPath := "config" + Sep + "paths.json"
-    if err := parsePathsAndCopy(jsonPath, cliArgs.Directory, strArray); err != nil { return err }
+    if err := parsePathsAndCopy(jsonPath, projectPath, strArray); err != nil {
+        return err
+    }
     Verb.Verbose("* All Template files created in their right position\n")
 
     return nil
-}
-
-// Generic method to copy cmake files for each target
-func copyTargetCMakes(projectPath string, targets types.TargetsTag) {
-    for target := range targets.Targets {
-        srcPath := "templates/cmake/CMakeTarget.cmake.tpl"
-        destPath := projectPath + Sep + ".wio" + Sep + "targets" + Sep + target + ".cmake"
-        AssetIO.CopyFile(srcPath, destPath, true)
-    }
 }
 
 // Appends a string to string slice only if it is missing
@@ -101,4 +98,76 @@ func AppendIfMissing(slice []string, i string) []string {
         }
     }
     return append(slice, i)
+}
+
+func genericUpdate(projectType ProjectTypes, cliArgs *types.CliArgs) (error) {
+    wioFile := cliArgs.Directory + Sep + "wio.yml"
+    configApp := &types.AppConfig{}
+    configLib := &types.LibConfig{}
+    var targetsTag types.TargetsTag
+    var librariesTag types.LibrariesTag
+    var config interface{}
+    var err error
+
+    fillConfig := false
+    if utils.PathExists(wioFile) {
+        // check if the config file is valid yml
+        if cliArgs.AppType == "app" {
+            err = NormalIO.ParseYml(wioFile, configApp)
+        } else if cliArgs.AppType == "lib" {
+            err = NormalIO.ParseYml(wioFile, configLib)
+        }
+
+        if err != nil {
+            Verb.Verbose("* Invalid yml file (wio.yml), deleting the file to create a new one\n")
+            fillConfig = true
+            os.Remove(wioFile)
+        } else {
+            // check if config is of right project type
+            configStr, err := NormalIO.ReadFile(wioFile)
+            if err != nil {
+                return err
+            }
+
+            if !strings.Contains(string(configStr), cliArgs.AppType + ":") {
+                return errors.New("current project is of a different type than the one specified in the update\n")
+            }
+        }
+    } else {
+        fillConfig = true
+    }
+
+    projectType.createStructure()
+
+    // copy templates
+    if err := copyTemplates(cliArgs.Directory, cliArgs.AppType, cliArgs.Ide, "config"+Sep+"update_paths.json"); err != nil {
+        return err
+    }
+
+    if fillConfig {
+        Verb.Verbose("* Filling the new wio.yml with details\n")
+        config, err = projectType.FillConfig()
+        if err != nil {
+            return err
+        }
+    } else {
+        Verb.Verbose("* Using configurations from the current wio.yml file\n")
+    }
+
+    if cliArgs.AppType == "app" {
+        if fillConfig {
+            configApp = config.(*types.AppConfig)
+        }
+        targetsTag = configApp.TargetsTag
+        librariesTag = configApp.LibrariesTag
+    } else if cliArgs.AppType == "lib" {
+        if fillConfig {
+            configLib = config.(*types.LibConfig)
+        }
+        targetsTag = configApp.TargetsTag
+        librariesTag = configApp.LibrariesTag
+    }
+
+    Verb.Verbose("* Creating CMake files for all the targets and libraries\n")
+    return cmake.HandleCMakeCreation(cliArgs.Directory, cliArgs.Framework, targetsTag, librariesTag)
 }

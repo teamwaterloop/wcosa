@@ -43,16 +43,32 @@ func CreateMainCMakeListsFile(projectPath string, board string, framework string
 
     for lib := range lockConfig.Libraries {
         if !strings.Contains(lib, "__") {
-            templateDataStr += "include_directories(" + lockConfig.Libraries[lib].Path + "/include" + ")\n"
+            templateDataStr += "include_directories(\"" + lockConfig.Libraries[lib].Path + "/include" + "\")\n"
         }
     }
 
     templateDataStr += "\n"
 
     for lib := range lockConfig.Libraries {
-        templateDataStr += "target_link_libraries(" + target + " " + targetPath + Sep + "libraries" + Sep + lib + "/" +
-            "lib" + lockConfig.Libraries[lib].Hash + ".a" + ")\n"
+        templateDataStr += "target_link_libraries(" + target + " \"" + targetPath + Sep + "libraries" + Sep + lib + "/" +
+            "lib" + lockConfig.Libraries[lib].Hash + ".a" + "\")\n"
     }
 
     return NormalIO.WriteFile(projectPath + Sep + ".wio" + Sep + "CMakeLists.txt", []byte(templateDataStr))
+}
+
+// When project is created, this creates all the cmake files
+func HandleCMakeCreation(projectPath string, framework string, targetsTag types.TargetsTag, librariesTag types.LibrariesTag) (error) {
+    defaultTarget := targetsTag.Targets[targetsTag.Default_target]
+
+    for target := range targetsTag.Targets {
+        currTarget := targetsTag.Targets[target]
+
+        // create cmake files for each target libraries
+        if err := PopulateCMakeFilesForLibs(projectPath, currTarget.Board, framework, target, librariesTag); err != nil {
+            return err
+        }
+    }
+
+    return CreateMainCMakeListsFile(projectPath, defaultTarget.Board, framework, targetsTag.Default_target, defaultTarget.Compile_flags)
 }

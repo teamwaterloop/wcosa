@@ -2,7 +2,6 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-
 // Part of commands/create package, which contains create command and sub commands provided by the tool.
 // Types for all the things being used in this package
 
@@ -16,6 +15,8 @@ type ProjectTypes interface {
     printProjectStructure()
     createTemplateProject() (error)
     printNextCommands()
+    FillConfig() (interface{}, error)
+    update() (error)
 }
 
 // All the data for the project (app)
@@ -23,16 +24,15 @@ type App struct {
     args *CliArgs
 }
 
-
 // All the data for the project (lib)
 type Lib struct {
     args *CliArgs
 }
 
 type Data struct {
-    Id string
-    Src string
-    Des string
+    Id       string
+    Src      string
+    Des      string
     Override bool
 }
 
@@ -41,9 +41,9 @@ type Paths struct {
 }
 
 type CMakeLibrary struct {
-    Name string
+    Name       string
     SourcePath string
-    Src []string
-    Hdr []string
-    libs []*CMakeLibrary
+    Src        []string
+    Hdr        []string
+    libs       []*CMakeLibrary
 }

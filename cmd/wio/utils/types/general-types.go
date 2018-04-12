@@ -15,6 +15,7 @@ type CliArgs struct {
     Platform  string
     Ide       string
     Tests     bool
+    Update    bool
 }
 
 

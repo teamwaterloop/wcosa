@@ -80,7 +80,7 @@ func PrettyPrintConfig(projectConfig interface{}, filePath string) (error) {
             finalString += "\n"
         } else if beautify && !first {
             first = true
-        } else if beautify {
+        } else if !strings.Contains(currLine, "compile_flags:") && beautify {
             simpleString := strings.Trim(currLine, " ")
 
             if simpleString[len(simpleString) - 1] == ':' {

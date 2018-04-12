@@ -124,6 +124,8 @@ Run "wio help" to see global options.
                     Usage:     "Creates a wio library, intended to be used by other people",
                     UsageText: "wio create lib <DIRECTORY> <BOARD> [command options]",
                     Flags: []cli.Flag{
+                        cli.BoolFlag{Name: "update",
+                            Usage: "Update the library instead of creating it with cli settings"},
                         cli.StringFlag{Name: "ide",
                             Usage: "Creates the project for a specified IDE (CLion, Eclipse, VS Code)",
                             Value: defaults.Ide},
@@ -135,27 +137,40 @@ Run "wio help" to see global options.
                             Value: defaults.Platform},
                     },
                     Action: func(c *cli.Context) error {
-                        // check if user defined a board
+                        var board string
+
                         if len(c.Args()) == 0 {
                             fmt.Println("A Directory path/name is needed to create this wio library!")
                             fmt.Println("\nExecute `wio create app -h` for more details and help")
                             os.Exit(1)
-                        } else if len(c.Args()) == 1 {
-                            fmt.Println("A Board is needed to create this wio library!")
-                            fmt.Println("\nExecute `wio create app -h` for more details and help")
-                            os.Exit(1)
                         }
 
-                        directory, _ := filepath.Abs(c.Args()[0])
+                        if !c.Bool("update") {
+                            // check if user defined a board
+                            if len(c.Args()) == 1 {
+                                fmt.Println("A Board is needed to create this wio library!")
+                                fmt.Println("\nExecute `wio create app -h` for more details and help")
+                                os.Exit(1)
+                            }
+                            board = c.Args()[1]
+                        } else {
+                            board = "none"
+                        }
+
+                        directory, err := filepath.Abs(c.Args()[0])
+                        if err != nil {
+                            panic(err)
+                        }
 
                         libArgs := CliArgs{
                             AppType: "lib",
                             Directory: directory,
-                            Board: c.Args()[1],
+                            Board: board,
                             Framework: c.String("framework"),
                             Platform: c.String("platform"),
                             Ide: c.String("ide"),
                             Tests: true,
+                            Update: c.Bool("update"),
                         }
                         turnVerbose(c.GlobalBool("verbose"))
 
@@ -169,6 +184,8 @@ Run "wio help" to see global options.
                     Usage:     "Creates a wio application, intended to be compiled and uploaded to a device",
                     UsageText: "wio create app <DIRECTORY> <BOARD> [command options]",
                     Flags: []cli.Flag{
+                        cli.BoolFlag{Name: "update",
+                            Usage: "Update the application instead of creating it with cli settings"},
                         cli.StringFlag{Name: "ide",
                             Usage: "Creates the project for a specified IDE (CLion, Eclipse, VS Code)",
                             Value: defaults.Ide},
@@ -183,27 +200,40 @@ Run "wio help" to see global options.
                         },
                     },
                     Action: func(c *cli.Context) error {
-                        // check if user defined a board
+                        var board string
+
                         if len(c.Args()) == 0 {
                             fmt.Println("A Directory path/name is needed to create this wio application!")
                             fmt.Println("\nExecute `wio create app -h` for more details and help")
                             os.Exit(1)
-                        } else if len(c.Args()) == 1 {
-                            fmt.Println("A Board is needed to create this wio application!")
-                            fmt.Println("\nExecute `wio create app -h` for more details and help")
-                            os.Exit(1)
+                        }
+
+                        if !c.Bool("update") {
+                            // check if user defined a board
+                            if len(c.Args()) == 1 {
+                                fmt.Println("A Board is needed to create this wio application!")
+                                fmt.Println("\nExecute `wio create app -h` for more details and help")
+                                os.Exit(1)
+                            }
+                            board = c.Args()[1]
+                        } else {
+                            board = "none"
                         }
 
                         directory, _ := filepath.Abs(c.Args()[0])
+                        if err != nil {
+                            panic(err)
+                        }
 
                         appArgs := CliArgs{
                             AppType: "app",
                             Directory: directory,
-                            Board: c.Args()[1],
+                            Board: board,
                             Framework: c.String("framework"),
                             Platform: c.String("platform"),
                             Ide: c.String("ide"),
                             Tests: c.Bool("tests"),
+                            Update: c.Bool("update"),
                         }
                         turnVerbose(c.GlobalBool("verbose"))
 
