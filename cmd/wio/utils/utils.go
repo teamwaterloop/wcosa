@@ -2,7 +2,7 @@ package utils
 
 import (
     "os"
-    "path/filepath"
+    "io"
 )
 
 // Checks if path exists and returns true and false based on that
@@ -24,16 +24,54 @@ func IsDir(path string) (bool, error) {
     return fi.IsDir(), nil
 }
 
-// Checks if the path contains the extensions provided and it returns true and false
-// based on that.If path does not exist, it throws an error
-func HasExtension(path string, extensions ...string) (bool, error) {
-    if !PathExists(path) { return false, nil }
-    for extension := 0; extension < len(extensions) ; extension++ {
-        var ext = filepath.Ext(path)
-        if extensions[extension] == ext {
-            return true, nil
+// This checks if the directory is empty or not
+func IsEmpty(name string) (bool, error) {
+    f, err := os.Open(name)
+    if err != nil {
+        return false, err
+    }
+    defer f.Close()
+
+    _, err = f.Readdirnames(1) // Or f.Readdir(1)
+    if err == io.EOF {
+        return true, nil
+    }
+    return false, err // Either not empty or error, suits both cases
+}
+
+// This checks if a string is in the slice
+func StringInSlice(a string, list []string) bool {
+    for _, b := range list {
+        if b == a {
+            return true
         }
     }
+    return false
+}
 
-    return false, nil
+// It takes in a slice and an element and then ut appends that element to the slice only
+// if that element in not already in the slice
+func AppendIfMissingElem(slice []string, i string) []string {
+    for _, ele := range slice {
+        if ele == i {
+            return slice
+        }
+    }
+    return append(slice, i)
+}
+
+// It takes two slices and appends the second one onto the first one. It does
+// not allow duplicates
+func AppendIfMissing(slice []string, slice2 []string) []string {
+    newSlice := make([]string, 0)
+
+    for _, ele1 := range slice {
+        newSlice = AppendIfMissingElem(newSlice, ele1)
+    }
+
+    for _, ele2 := range slice2 {
+        newSlice = AppendIfMissingElem(newSlice, ele2)
+    }
+
+    return newSlice
 }

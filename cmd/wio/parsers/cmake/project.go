@@ -7,141 +7,151 @@
 package cmake
 
 import (
-    "path/filepath"
     . "wio/cmd/wio/utils/io"
     "strings"
-    "wio/cmd/wio/utils/types"
+    "wio/cmd/wio/types"
+    "wio/cmd/wio/utils"
 )
 
-// This creates the main cmake file based on the target. This method is used for creating the main cmake for project
-// type of "lib"
-func CreateMainCMakeListsFileLib(projectPath string, board string, framework string, target string, targetFlags []string, libFlags []string) (error) {
-    projectName := filepath.Base(projectPath)
-    executablePath, err := NormalIO.GetRoot()
+// This creates the main cmake file based on the target provided. This method is used for creating the main cmake for
+// project type of "pkg". This CMake file links the package with the target provided so that it can tested and run
+// before getting shipped
+func CreatePkgMainCMakeLists(pkgName string, pkgPath string, board string, framework string, target string,
+    targetFlags []string, pkgFlags []string) (error) {
 
+    executablePath, err := NormalIO.GetRoot()
     if err != nil {
         return err
     }
 
-    lockFilePath := projectPath + Sep + ".wio" + Sep + lockFileName
-    targetPath := projectPath + Sep + ".wio" + Sep + "targets" + Sep + target
+    lockFilePath := pkgPath + Sep + ".wio" + Sep + lockFileName
+    targetPath := pkgPath + Sep + ".wio" + Sep + "targets" + Sep + target
 
     toolChainPath := executablePath + "/toolchain/cmake/CosaToolchain.cmake"
 
     // read the CMakeLists.txt file template
-    templateData, err := AssetIO.ReadFile("templates/cmake/CMakeListsLib.txt.tpl")
+    templateData, err := AssetIO.ReadFile("templates/cmake/CMakeListsPkg.txt.tpl")
 
     if err != nil {
         return err
     }
 
     templateDataStr := strings.Replace(string(templateData), "{{toolchain-path}}", toolChainPath, -1)
-    templateDataStr = strings.Replace(templateDataStr, "{{project-name}}", projectName, -1)
+    templateDataStr = strings.Replace(templateDataStr, "{{project-name}}", pkgName, -1)
     templateDataStr = strings.Replace(templateDataStr, "{{target-name}}", target, -1)
     templateDataStr = strings.Replace(templateDataStr, "{{board}}", board, -1)
     templateDataStr = strings.Replace(templateDataStr, "{{framework}}", strings.ToUpper(framework), -1)
     templateDataStr = strings.Replace(templateDataStr, "{{target-flags}}", strings.Join(targetFlags, " "), -1)
-    templateDataStr = strings.Replace(templateDataStr, "{{lib-flags}}", strings.Join(libFlags, " "), -1)
+    templateDataStr = strings.Replace(templateDataStr, "{{pkg-flags}}", strings.Join(pkgFlags, " "), -1)
 
-    lockConfig := types.LibrariesLockConfig{}
+    linkPackagesString := ""
 
-    if err = NormalIO.ParseYml(lockFilePath, &lockConfig); err != nil {
-        return err
-    }
+    if utils.PathExists(lockFilePath) {
+        lockConfig := types.PackagesLockConfig{}
 
-    linkLibraryString := ""
-
-    for lib := range lockConfig.Libraries {
-        if !strings.Contains(lib, "__") {
-            linkLibraryString += "include_directories(\"" + lockConfig.Libraries[lib].Path + "/include" + "\")\n"
-        }
-    }
-
-    linkLibraryString += "\n"
-
-    for lib := range lockConfig.Libraries {
-        linkLibraryString += "target_link_libraries(" + target + " \"" + targetPath + Sep + "libraries" + Sep + lib + "/" +
-            "lib" + lockConfig.Libraries[lib].Hash + ".a" + "\")\n"
-    }
-
-    if linkLibraryString == "\n" {
-        linkLibraryString = ""
-    }
-
-    templateDataStr = strings.Replace(templateDataStr, "{{link-library}}", linkLibraryString, -1)
-
-    return NormalIO.WriteFile(projectPath + Sep + ".wio" + Sep + "CMakeLists.txt", []byte(templateDataStr))
-}
-
-// This creates the main cmake file based on the target. This method is used for creating the main cmake for project
-// type of "app"
-func CreateMainCMakeListsFileApp(projectPath string, board string, framework string, target string, targetFlags []string) (error) {
-    projectName := filepath.Base(projectPath)
-    executablePath, err := NormalIO.GetRoot()
-
-    if err != nil {
-        return err
-    }
-
-    lockFilePath := projectPath + Sep + ".wio" + Sep + lockFileName
-    targetPath := projectPath + Sep + ".wio" + Sep + "targets" + Sep + target
-
-    toolChainPath := executablePath + "/toolchain/cmake/CosaToolchain.cmake"
-
-    // read the CMakeLists.txt file template
-    templateData, err := AssetIO.ReadFile("templates/cmake/CMakeLists.txt.tpl")
-
-    if err != nil {
-        return err
-    }
-
-    templateDataStr := strings.Replace(string(templateData), "{{toolchain-path}}", toolChainPath, -1)
-    templateDataStr = strings.Replace(templateDataStr, "{{project-name}}", projectName, -1)
-    templateDataStr = strings.Replace(templateDataStr, "{{project-path}}", projectPath, -1)
-    templateDataStr = strings.Replace(templateDataStr, "{{target-name}}", target, -1)
-    templateDataStr = strings.Replace(templateDataStr, "{{board}}", board, -1)
-    templateDataStr = strings.Replace(templateDataStr, "{{framework}}", strings.ToUpper(framework), -1)
-    templateDataStr = strings.Replace(templateDataStr, "{{target-flags}}", strings.Join(targetFlags, " "), -1)
-
-    lockConfig := types.LibrariesLockConfig{}
-
-    if err = NormalIO.ParseYml(lockFilePath, &lockConfig); err != nil {
-        return err
-    }
-
-    for lib := range lockConfig.Libraries {
-        if !strings.Contains(lib, "__") {
-            templateDataStr += "include_directories(\"" + lockConfig.Libraries[lib].Path + "/include" + "\")\n"
-        }
-    }
-
-    templateDataStr += "\n"
-
-    for lib := range lockConfig.Libraries {
-        templateDataStr += "target_link_libraries(" + target + " \"" + targetPath + Sep + "libraries" + Sep + lib + "/" +
-            "lib" + lockConfig.Libraries[lib].Hash + ".a" + "\")\n"
-    }
-
-    return NormalIO.WriteFile(projectPath + Sep + ".wio" + Sep + "CMakeLists.txt", []byte(templateDataStr))
-}
-
-// Handles creation and update of all the cmake files. It parses libraries and creates cmake files for each target
-// and based on project type
-func HandleCMakeCreation(projectPath string, framework string, targetsTag types.TargetsTag, librariesTag types.LibrariesTag, isLib bool, libFlags []string) (error) {
-    defaultTarget := targetsTag.Targets[targetsTag.Default_target]
-
-    for target := range targetsTag.Targets {
-        currTarget := targetsTag.Targets[target]
-
-        // create cmake files for each target libraries
-        if err := PopulateCMakeFilesForLibs(projectPath, currTarget.Board, framework, target, librariesTag); err != nil {
+        if err = NormalIO.ParseYml(lockFilePath, &lockConfig); err != nil {
             return err
         }
+
+        for pkg := range lockConfig.Packages {
+            if !strings.Contains(pkg, "__") {
+                linkPackagesString += "include_directories(\"" + lockConfig.Packages[pkg].Path + "/include" + "\")\n"
+            }
+        }
+
+        linkPackagesString += "\n"
+
+        for pkg := range lockConfig.Packages {
+            linkPackagesString += "target_link_libraries(" + target + " \"" + targetPath + Sep + "libraries" + Sep +
+                pkg + "/" + "lib" + lockConfig.Packages[pkg].Hash + ".a" + "\")\n"
+        }
+
+        if linkPackagesString == "\n" {
+            linkPackagesString = ""
+        }
     }
 
-    if isLib {
-        return CreateMainCMakeListsFileLib(projectPath, defaultTarget.Board, framework, targetsTag.Default_target, defaultTarget.Compile_flags, libFlags)
+    templateDataStr = strings.Replace(templateDataStr, "{{link-library}}", linkPackagesString, -1)
+
+    return NormalIO.WriteFile(pkgPath + Sep + ".wio" + Sep + "CMakeLists.txt", []byte(templateDataStr))
+}
+
+// This creates the main cmake file based on the target. This method is used for creating the main cmake for project
+// type of "app". In this it does not link any library but rather just populates a target that can be uploaded
+func CreateAppMainCMakeLists(appName string, appPath string, board string, framework string, target string,
+    targetFlags []string) (error) {
+
+    executablePath, err := NormalIO.GetRoot()
+    if err != nil {
+        return err
+    }
+
+    lockFilePath := appPath + Sep + ".wio" + Sep + lockFileName
+    targetPath := appPath + Sep + ".wio" + Sep + "targets" + Sep + target
+
+    toolChainPath := executablePath + "/toolchain/cmake/CosaToolchain.cmake"
+
+    // read the CMakeLists.txt file template
+    templateData, err := AssetIO.ReadFile("templates/cmake/CMakeListsApp.txt.tpl")
+    if err != nil {
+        return err
+    }
+
+    templateDataStr := strings.Replace(string(templateData), "{{toolchain-path}}", toolChainPath, -1)
+    templateDataStr = strings.Replace(templateDataStr, "{{project-name}}", appName, -1)
+    templateDataStr = strings.Replace(templateDataStr, "{{target-name}}", target, -1)
+    templateDataStr = strings.Replace(templateDataStr, "{{board}}", board, -1)
+    templateDataStr = strings.Replace(templateDataStr, "{{framework}}", strings.ToUpper(framework), -1)
+    templateDataStr = strings.Replace(templateDataStr, "{{target-flags}}", strings.Join(targetFlags, " "), -1)
+
+    if utils.PathExists(lockFilePath) {
+        lockConfig := types.PackagesLockConfig{}
+
+        if err = NormalIO.ParseYml(lockFilePath, &lockConfig); err != nil {
+            return err
+        }
+
+        for lib := range lockConfig.Packages {
+            if !strings.Contains(lib, "__") {
+                templateDataStr += "include_directories(\"" + lockConfig.Packages[lib].Path + "/include" + "\")\n"
+            }
+        }
+
+        templateDataStr += "\n"
+
+        for pkg := range lockConfig.Packages {
+            templateDataStr += "target_link_libraries(" + target + " \"" + targetPath + Sep + "packages" + Sep + pkg + "/" +
+                "lib" + lockConfig.Packages[pkg].Hash + ".a" + "\")\n"
+        }
+    }
+
+    return NormalIO.WriteFile(appPath + Sep + ".wio" + Sep + "CMakeLists.txt", []byte(templateDataStr))
+}
+
+// This creates all the cmake files necessary for the project to compile. It also generates a dependency tree based
+// on the project structure and links all the packages together. It generates all this for all the targets that are
+// defined in the wio.yml file
+func FullCMakeCreationWithDepsParsing(projectName string, projectPath string, framework string, targets types.TargetsTag,
+    dependencies types.DependenciesTag, isPkg bool, pkgFlags []string) (error) {
+
+    // create a separate set of CMake files for each target
+    for target := range targets.Targets {
+        currTarget := targets.Targets[target]
+
+        // Parse dependencies and then create CMakeLists file for each dependency
+        if err := ParseDepsAndCreateCMakes(projectPath, currTarget.Board, framework, target, dependencies);
+        err != nil {
+            return err
+       }
+    }
+
+    defaultTarget := targets.Targets[targets.Default_target]
+
+    if isPkg {
+        return CreatePkgMainCMakeLists(projectName, projectPath, defaultTarget.Board, framework,
+            targets.Default_target, defaultTarget.Compile_flags, pkgFlags)
     } else {
-        return CreateMainCMakeListsFileApp(projectPath, defaultTarget.Board, framework, targetsTag.Default_target, defaultTarget.Compile_flags)
+        return CreateAppMainCMakeLists(projectName, projectPath, defaultTarget.Board, framework,
+            targets.Default_target, defaultTarget.Compile_flags)
     }
 }

@@ -18,11 +18,10 @@ type CliArgs struct {
     Update    bool
 }
 
-
 // type for the targets tag in the configuration file
 type TargetsTag struct {
-    Default_target string                   `yaml:"default"`
-    Targets map[string]*TargetTag           `yaml:"created"`
+    Default_target string                `yaml:"default"`
+    Targets        map[string]*TargetTag `yaml:"create"`
 }
 
 // Structure to handle individual target inside targets
@@ -40,7 +39,7 @@ type AppTag struct {
 }
 
 // Structure to hold information about project type: lib
-type LibTag struct {
+type PkgTag struct {
     Name          string
     Version       string
     Authors       []string
@@ -53,26 +52,26 @@ type LibTag struct {
 }
 
 type AppConfig struct {
-    MainTag      AppTag       `yaml:"app"`
-    TargetsTag   TargetsTag   `yaml:"targets"`
-    LibrariesTag LibrariesTag `yaml:"libraries"`
+    MainTag     AppTag      `yaml:"app"`
+    TargetsTag  TargetsTag  `yaml:"targets"`
+    DependenciesTag DependenciesTag `yaml:"dependencies"`
 }
 
-type LibConfig struct {
-    MainTag      LibTag       `yaml:"lib"`
-    TargetsTag   TargetsTag   `yaml:"targets"`
-    LibrariesTag LibrariesTag `yaml:"libraries"`
+type PkgConfig struct {
+    MainTag     PkgTag      `yaml:"pkg"`
+    TargetsTag  TargetsTag  `yaml:"targets"`
+    DependenciesTag DependenciesTag `yaml:"dependencies"`
 }
 
 // Structure to handle individual library inside libraries
-type LibraryTag struct {
+type DependencyTag struct {
     Url           string
-    Branch        string
+    Ref           string
     Compile_flags []string
 }
 
 // Structure to handle individual dependency inside dependencies
-type LibraryLockTag struct {
+type PackageLockTag struct {
     Name          string
     Hash          string
     Path          string
@@ -81,12 +80,26 @@ type LibraryLockTag struct {
 }
 
 // type for the libraries tag in the libs.lock file
-type LibrariesLockTag map[string]*LibraryLockTag
+type PackagesLockTag map[string]*PackageLockTag
 
 // type for the libraries tag in the main wio.yml file
-type LibrariesTag map[string]*LibraryTag
+type DependenciesTag map[string]*DependencyTag
 
 // type for whole libs.lock file
-type LibrariesLockConfig struct {
-    Libraries LibrariesLockTag
+type PackagesLockConfig struct {
+    Packages PackagesLockTag
 }
+
+// DConfig contains configurations for default commandline arguments
+type DConfig struct {
+    Ide string
+    Framework string
+    Platform string
+    File string
+    Port string
+    Version string
+    Board string
+    Btarget string
+    Utarget string
+}
+
