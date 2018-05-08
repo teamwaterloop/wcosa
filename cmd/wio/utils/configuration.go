@@ -69,15 +69,16 @@ func PrettyPrintConfig(projectConfig interface{}, filePath string) (error) {
 
         if strings.Contains(currLine, "app:") {
             finalString += infoDataSlice[0] + "\n"
-        } else if strings.Contains(currLine, "lib:") {
+        } else if strings.Contains(currLine, "pkg:") {
             finalString += infoDataSlice[1] + "\n"
         } else if strings.Contains(currLine, "targets:") {
-            finalString += "\n" + infoDataSlice[2] + "\n"
-        } else if strings.Contains(currLine, "created:") {
+            finalString += infoDataSlice[2] + "\n"
+        } else if strings.Contains(currLine, "create:") {
             beautify = true
-        } else if strings.Contains(currLine, "libraries:") {
+        } else if strings.Contains(currLine, "dependencies:") {
+            beautify = true
             first = false
-            finalString += "\n"
+            finalString += infoDataSlice[3] + "\n"
         } else if beautify && !first {
             first = true
         } else if !strings.Contains(currLine, "compile_flags:") && beautify {

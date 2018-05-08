@@ -6,28 +6,6 @@
 // Types for all the things being used in this package
 package create
 
-import . "wio/cmd/wio/utils/types"
-
-// Interface for Types of Applications
-type ProjectTypes interface {
-    createStructure() (error)
-    printProjectStructure()
-    createTemplateProject() (error)
-    printNextCommands()
-    FillConfig() (interface{}, error)
-    update() (error)
-}
-
-// All the data for the project (app)
-type App struct {
-    args *CliArgs
-}
-
-// All the data for the project (lib)
-type Lib struct {
-    args *CliArgs
-}
-
 type Data struct {
     Id       string
     Src      string
@@ -37,12 +15,4 @@ type Data struct {
 
 type Paths struct {
     Paths []Data
-}
-
-type CMakeLibrary struct {
-    Name       string
-    SourcePath string
-    Src        []string
-    Hdr        []string
-    libs       []*CMakeLibrary
 }

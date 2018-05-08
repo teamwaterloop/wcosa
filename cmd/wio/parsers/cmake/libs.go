@@ -4,112 +4,145 @@
 
 // Part of parsers/cmake package, which contains parser to create cmake files
 // This file parses dependencies and creates CMakeLists.txt file for each of them
+
 package cmake
 
 import (
-    "wio/cmd/wio/utils/types"
+    "wio/cmd/wio/types"
     "wio/cmd/wio/utils/io"
+    "wio/cmd/wio/parsers"
     "wio/cmd/wio/utils"
-    "path/filepath"
     "io/ioutil"
+    "path/filepath"
     "os"
     "strings"
-    . "wio/cmd/wio/parsers"
 )
 
 var configFileName = "wio.yml"
-var localLibFolder = "local"
-var remoteLibFolder = "remote"
-var lockFileName = "libs.lock"
+var vendorPkgFolder = "vendor"
+var remotePkgFolder = "remote"
+var lockFileName = "pkg.lock"
 var executionWayFile = "executionWay.txt"
 
-// Parses Library based on the path provides and its dependencies and it modifies structures to store the data
-func parseLibrary(libPath string, depTree *DependencyTree, depConfig types.LibrariesLockConfig, hash string) (error) {
-    configFile := libPath + io.Sep + configFileName
-    libraryLibPath := libPath + io.Sep + "lib"
+// Parses Package based on the path provides and its dependencies and it modifies dependency tree to store the data
+func parsePackage(packagePath string, depTree *parsers.DependencyTree, depConfig types.PackagesLockConfig,
+    dependencies types.DependenciesTag, hash string) (error) {
 
-    var config types.LibConfig
-    var libName string
+    configFile := packagePath + io.Sep + configFileName
+    dependenciesPath := packagePath + io.Sep + "pkg"
 
-    depLock := types.LibraryLockTag{}
+    var config types.PkgConfig
+    var pkgName string
 
-    // check if wio.yml file exists
+    depLock := types.PackageLockTag{}
+
+    // check if wio.yml file exists for the dependency and based on that gather the name
+    // of the package
     if utils.PathExists(configFile) {
         if err := io.NormalIO.ParseYml(configFile, &config); err != nil {
             return err
         }
 
-        libName = config.MainTag.Name
+        pkgName = config.MainTag.Name
         depLock.Compile_flags = config.MainTag.Compile_flags
     } else {
-        libName = filepath.Base(libPath)
+        pkgName = filepath.Base(packagePath)
     }
 
     if len(hash) <= 0 {
-        hash += libName
+        hash += pkgName
     } else {
-        hash += "__" + libName
+        hash += "__" + pkgName
     }
 
-    depLock.Name = libName
+    depLock.Name = pkgName
     depLock.Hash = hash
-    depLock.Path = libPath
+    depLock.Path = packagePath
 
-    depConfig.Libraries[hash] = &depLock
+    depConfig.Packages[hash] = &depLock
     depTree.Config = depLock
-    depTree.Child = make([]*DependencyTree, 0)
+    depTree.Child = make([]*parsers.DependencyTree, 0)
 
-    if !utils.PathExists(libraryLibPath) {
-        return nil
-    }
+    // parse vendor dependencies
+    vendorPath := dependenciesPath + io.Sep + "vendor"
+    if utils.PathExists(vendorPath) {
+        if dirs, err := ioutil.ReadDir(vendorPath); err != nil {
+            return err
+        } else if len(dirs) > 0 {
+            for dir := range dirs {
+                if dirs[dir].Name()[0] == '.' {
+                    continue
+                }
 
-    if dirs, err := ioutil.ReadDir(libraryLibPath); err != nil {
-        return err
-    } else if len(dirs) > 0 {
-        for dir := range dirs {
-            if dirs[dir].Name()[0] == '.' {
-                continue
+                currTree := parsers.DependencyTree{}
+
+                if err := parsePackage(vendorPath+io.Sep+dirs[dir].Name(), &currTree, depConfig,
+                    config.DependenciesTag, hash);
+                    err != nil {
+                    return err
+                }
+                depTree.Child = append(depTree.Child, &currTree)
             }
-
-            currTree := DependencyTree{}
-
-            if err := parseLibrary(libraryLibPath+io.Sep+dirs[dir].Name(), &currTree, depConfig, hash);
-                err != nil {
-                return err
-            }
-            depTree.Child = append(depTree.Child, &currTree)
         }
     }
+
+    // parse remote dependencies
+    remotePath := dependenciesPath + io.Sep + "remote"
+    if utils.PathExists(remotePath) {
+        if dirs, err := ioutil.ReadDir(remotePath); err != nil {
+            return err
+        } else if len(dirs) > 0 {
+            for dir := range dirs {
+                if dirs[dir].Name()[0] == '.' {
+                    continue
+                }
+
+                currTree := parsers.DependencyTree{}
+
+                if err := parsePackage(remotePath+io.Sep+dirs[dir].Name(), &currTree, depConfig,
+                    config.DependenciesTag, hash);
+                    err != nil {
+                    return err
+                }
+                depTree.Child = append(depTree.Child, &currTree)
+            }
+        }
+    }
+
+
+    if val, ok := dependencies[depTree.Config.Name]; ok {
+        allFlags := utils.AppendIfMissing(val.Compile_flags, depTree.Config.Compile_flags)
+
+        depTree.Config.Compile_flags = allFlags
+        depConfig.Packages[depTree.Config.Hash].Compile_flags = allFlags
+    }
+
 
     return nil
 }
 
-// Parses all the libraries recursively with the help of ParseLibrary function
-func parseLibs(librariesPath string, depTrees []*DependencyTree, depLock types.LibrariesLockConfig,
-    libTag types.LibrariesTag, hash string) ([]*DependencyTree, error) {
-    if !utils.PathExists(librariesPath) {
+// Parses all the packages recursively with the help of ParsePackage function
+func parsePackages(packagesPath string, depTrees []*parsers.DependencyTree, depConfig types.PackagesLockConfig,
+    dependencies types.DependenciesTag, hash string) ([]*parsers.DependencyTree, error) {
+
+    if !utils.PathExists(packagesPath) {
         return depTrees, nil
     }
 
-    if dirs, err := ioutil.ReadDir(librariesPath); err != nil {
+    if dirs, err := ioutil.ReadDir(packagesPath); err != nil {
         return depTrees, err
     } else if len(dirs) > 0 {
         for dir := range dirs {
-            currTree := DependencyTree{}
+            currTree := parsers.DependencyTree{}
 
             // ignore hidden files
             if dirs[dir].Name()[0] == '.' {
                 continue
             }
 
-            if err := parseLibrary(librariesPath+io.Sep+dirs[dir].Name(), &currTree, depLock, hash);
+            if err := parsePackage(packagesPath+io.Sep+dirs[dir].Name(), &currTree, depConfig, dependencies, hash);
                 err != nil {
                 return depTrees, err
-            }
-
-            if val, ok := libTag[currTree.Config.Name]; ok {
-                currTree.Config.Compile_flags = val.Compile_flags
-                depLock.Libraries[currTree.Config.Name].Compile_flags = val.Compile_flags
             }
 
             depTrees = append(depTrees, &currTree)
@@ -119,28 +152,30 @@ func parseLibs(librariesPath string, depTrees []*DependencyTree, depLock types.L
     return depTrees, nil
 }
 
-// Parses all the libraries and their dependencies and creates libs.lock file
-func createLibsLockFile(projectPath string, libTag types.LibrariesTag) ([]*DependencyTree, error) {
-    librariesLocalPath := projectPath + io.Sep + "lib" + io.Sep + localLibFolder
-    librariesRemotePath := projectPath + io.Sep + "lib" + io.Sep + remoteLibFolder
+// Parses all the packages and their dependencies and creates pkg.lock file
+func createPkgLockFile(projectPath string, dependencies types.DependenciesTag) ([]*parsers.DependencyTree, error) {
     wioPath := projectPath + io.Sep + ".wio"
+    librariesLocalPath := wioPath + io.Sep + "pkg" +  io.Sep + vendorPkgFolder
+    librariesRemotePath := wioPath + io.Sep + "pkg" +  io.Sep + remotePkgFolder
 
-    dependencyTrees := make([]*DependencyTree, 0)
-    dependencyLock := types.LibrariesLockConfig{}
-    dependencyLock.Libraries = types.LibrariesLockTag{}
 
-    // parse all the libraries and their dependencies in lib/local folder
-    dependencyTrees, err := parseLibs(librariesLocalPath, dependencyTrees, dependencyLock, libTag, "")
+    dependencyTrees := make([]*parsers.DependencyTree, 0)
+    dependencyLock := types.PackagesLockConfig{}
+    dependencyLock.Packages = types.PackagesLockTag{}
+
+    // parse all the libraries and their dependencies in vendor folder
+    dependencyTrees, err := parsePackages(librariesLocalPath, dependencyTrees, dependencyLock, dependencies, "")
     if err != nil {
         return nil, err
     }
-    // parse all the libraries and their dependencies in lib/remote folder
-    dependencyTrees, err = parseLibs(librariesRemotePath, dependencyTrees, dependencyLock, libTag, "")
+
+    // parse all the libraries and their dependencies in remote folder
+    dependencyTrees, err = parsePackages(librariesRemotePath, dependencyTrees, dependencyLock, dependencies, "")
     if err != nil {
         return nil, err
     }
 
-    // write lock file
+    // write the lock file
     if err = io.NormalIO.WriteYml(wioPath+io.Sep+lockFileName, &dependencyLock); err != nil {
         return nil, err
     }
@@ -149,25 +184,22 @@ func createLibsLockFile(projectPath string, libTag types.LibrariesTag) ([]*Depen
     return dependencyTrees, nil
 }
 
-// Chooses include path based on the the template we support
-func chooseIncludePath(libraryPath string) (string) {
-    return libraryPath + "/include"
-}
+// Given all the dependency tree data, it will create cmake files for each dependency
+func createCMakes(exePath string, projectPath string, board string, framework string, target string,
+    depTree *parsers.DependencyTree) (error) {
 
-// Create CMakeLists file for each target
-func createCMakes(exePath string, projectPath string, board string, framework string, target string, depTree *DependencyTree) (error) {
-    wioLibPath := projectPath + io.Sep + ".wio" + io.Sep + "targets" + io.Sep + target + io.Sep + "libraries"
-
-    if err := os.MkdirAll(wioLibPath+io.Sep+depTree.Config.Hash, os.ModePerm); err != nil {
+    // this is where build files for each package specific to each target will be held
+    wioBuildPkgPath := projectPath + io.Sep + ".wio" + io.Sep + "targets" + io.Sep + target + io.Sep + "packages"
+    if err := os.MkdirAll(wioBuildPkgPath+io.Sep+depTree.Config.Hash, os.ModePerm); err != nil {
         return err
     }
 
-    librariesTemplate, err := io.AssetIO.ReadFile("templates" + io.Sep + "cmake" + io.Sep + "CMakeListsTarget.txt")
+    packagesTemplate, err := io.AssetIO.ReadFile("templates" + io.Sep + "cmake" + io.Sep + "CMakeListsTarget.txt")
     if err != nil {
         return err
     }
-    librariesTemplateStr := string(librariesTemplate)
 
+    packagesTemplateStr := string(packagesTemplate)
     for i := 0; i < len(depTree.Child); i++ {
         err := createCMakes(exePath, projectPath, board, framework, target, depTree.Child[i])
         if err != nil {
@@ -175,23 +207,26 @@ func createCMakes(exePath string, projectPath string, board string, framework st
         }
     }
 
-    librariesTemplateStr = strings.Replace(librariesTemplateStr, "{{WIO_PATH}}", exePath, -1)
-    librariesTemplateStr = strings.Replace(librariesTemplateStr, "{{library-name}}", depTree.Config.Hash, -1)
-    librariesTemplateStr = strings.Replace(librariesTemplateStr, "{{lib-path}}", depTree.Config.Path, -1)
-    librariesTemplateStr = strings.Replace(librariesTemplateStr, "{{board}}", board, -1)
-    librariesTemplateStr = strings.Replace(librariesTemplateStr, "{{framework}}", strings.ToUpper(framework), -1)
-    librariesTemplateStr = strings.Replace(librariesTemplateStr, "{{compile-flags}}",
+    packagesTemplateStr = strings.Replace(packagesTemplateStr, "{{WIO_PATH}}", exePath, -1)
+    packagesTemplateStr = strings.Replace(packagesTemplateStr, "{{library-name}}", depTree.Config.Hash, -1)
+    packagesTemplateStr = strings.Replace(packagesTemplateStr, "{{lib-path}}", depTree.Config.Path, -1)
+    packagesTemplateStr = strings.Replace(packagesTemplateStr, "{{board}}", board, -1)
+    packagesTemplateStr = strings.Replace(packagesTemplateStr, "{{framework}}", strings.ToUpper(framework), -1)
+    packagesTemplateStr = strings.Replace(packagesTemplateStr, "{{compile-flags}}",
         strings.Join(depTree.Config.Compile_flags, " "), -1)
-    librariesTemplateStr += "\n"
+    packagesTemplateStr += "\n"
 
     for dep := range depTree.Child {
-        librariesTemplateStr += "include_directories(\"" + chooseIncludePath(depTree.Child[dep].Config.Path) + "\")\n"
-        librariesTemplateStr += "target_link_libraries(" + depTree.Config.Hash + " \"${CMAKE_SOURCE_DIR}/../" +
+        packagesTemplateStr += "include_directories(\"" + depTree.Child[dep].Config.Path + "/include\")\n"
+        packagesTemplateStr += "target_link_libraries(" + depTree.Config.Hash + " \"${CMAKE_SOURCE_DIR}/../" +
             depTree.Child[dep].Config.Hash + io.Sep + "lib" + depTree.Child[dep].Config.Hash + ".a\")\n\n"
     }
 
-    io.NormalIO.WriteFile(wioLibPath+io.Sep+depTree.Config.Hash+io.Sep+"CMakeLists.txt", []byte(librariesTemplateStr))
+    cMakefilePath := wioBuildPkgPath+io.Sep+depTree.Config.Hash+io.Sep+"CMakeLists.txt"
+    io.NormalIO.WriteFile(cMakefilePath,
+        []byte(packagesTemplateStr))
 
+    // create execution way file
     executionWayFileName := projectPath + io.Sep + ".wio" + io.Sep + "targets" + io.Sep + target + io.Sep + executionWayFile
 
     f, err := os.OpenFile(executionWayFileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
@@ -199,28 +234,31 @@ func createCMakes(exePath string, projectPath string, board string, framework st
         return nil
     }
 
-    LibPath := projectPath + io.Sep + ".wio" + io.Sep + "targets" + io.Sep + target + io.Sep + depTree.Config.Hash
+    BuildPkgPath := projectPath + io.Sep + ".wio" + io.Sep + "targets" + io.Sep + target + io.Sep + depTree.Config.Hash
 
-    if _, err = f.WriteString(LibPath + "\n"); err != nil {
+    if _, err = f.WriteString(BuildPkgPath + "\n"); err != nil {
         return err
     }
 
     return nil
 }
 
-// Parsers each library and its dependency and then populate libraries CMakes for each target
-func PopulateCMakeFilesForLibs(projectPath string, board string, framework string, target string, libTag types.LibrariesTag) (error) {
-    dependencyTree, err := createLibsLockFile(projectPath, libTag)
+// This parses dependencies and creates cmake files for all of these. It does this for a target that is provided
+// to it.
+func ParseDepsAndCreateCMakes(projectPath string, board string, framework string, target string,
+    dependencies types.DependenciesTag) (error) {
 
+    // this will create a lock file for packages and will provide us with a dependency tree for us to use
+    dependencyTree, err := createPkgLockFile(projectPath, dependencies)
+    if err != nil {
+        return err
+    }
     exePath, err := io.NormalIO.GetRoot()
-
-    if err != nil {
-        return err
-    }
     if err != nil {
         return err
     }
 
+    // This file describe the way these dependencies are linked
     executionWayFilePath := projectPath + io.Sep + ".wio" + io.Sep + "targets" + io.Sep + target + io.Sep + executionWayFile
 
     // remove execution way text file
