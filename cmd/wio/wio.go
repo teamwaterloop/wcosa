@@ -18,6 +18,7 @@ import (
     "wio/cmd/wio/commands/libraries"
     "wio/cmd/wio/utils/io/log"
     "wio/cmd/wio/types"
+    "wio/cmd/wio/commands/build"
 )
 
 //go:generate go-bindata -nomemcopy -prefix ../../ ../../assets/config/... ../../assets/templates/...
@@ -220,10 +221,13 @@ Run "wio help" to see global options.
                     Usage: "Build a specified target instead of building all the targets",
                     Value: defaults.Btarget,
                 },
+                cli.StringFlag{Name: "directory",
+                    Usage: "Directory for the project (default: current working directory)",
+                    Value: getCurrDir(),
+                },
             },
-            Action: func(c *cli.Context) error {
-                // build based on the type of project (from config file)
-                return nil
+            Action: func(c *cli.Context) {
+                command = build.Build{Context: c}
             },
         },
         {
@@ -463,6 +467,12 @@ Run "wio help" to see global options.
     if command != nil {
         command.Execute()
     }
+}
+
+func getCurrDir() (string) {
+    directory, err := os.Getwd()
+    commands.RecordError(err, "")
+    return directory
 }
 
 // Set's verbose mode on
