@@ -4,7 +4,7 @@
 
 // Part of commands package, which contains all the commands provided by the tool.
 // Package manager for wio
-package libraries
+package pac
 
 import (
     "github.com/urfave/cli"

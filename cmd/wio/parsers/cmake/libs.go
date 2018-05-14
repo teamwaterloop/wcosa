@@ -174,7 +174,7 @@ func createDependencyTree(projectPath string, dependencies types.DependenciesTag
 func buildCMakeString(templateString string, finalString string, depTree *parsers.DependencyTree) (string) {
     currString := templateString
 
-    currString = strings.Replace(currString, "{{DEPENDENCY_PATH}}", depTree.Config.Path, -1)
+    currString = strings.Replace(currString, "{{DEPENDENCY_PATH}}", filepath.ToSlash(depTree.Config.Path), -1)
     currString = strings.Replace(currString, "{{DEPENDENCY_NAME}}", depTree.Config.Hash, -1)
     currString = strings.Replace(currString, "{{DEPENDENCY_COMPILE_FLAGS}}",
         strings.Join(depTree.Config.Compile_flags, " "), -1)

@@ -10,6 +10,7 @@ import (
     "strings"
     "wio/cmd/wio/parsers"
     "wio/cmd/wio/utils/io"
+    "path/filepath"
 )
 
 // This creates the main cmake file based on the target provided. This method is used for creating the main cmake for
@@ -32,8 +33,9 @@ func CreatePkgMainCMakeLists(pkgName string, pkgPath string, board string, frame
         return err
     }
 
-    templateDataStr := strings.Replace(string(templateData), "{{TOOLCHAIN_FILE}}", toolChainPath, -1)
-    templateDataStr = strings.Replace(templateDataStr, "{{PROJECT_PATH}}", pkgPath, -1)
+    templateDataStr := strings.Replace(string(templateData), "{{TOOLCHAIN_FILE}}",
+        filepath.ToSlash(toolChainPath), -1)
+    templateDataStr = strings.Replace(templateDataStr, "{{PROJECT_PATH}}", filepath.ToSlash(pkgPath), -1)
     templateDataStr = strings.Replace(templateDataStr, "{{PROJECT_NAME}}", pkgName, -1)
     templateDataStr = strings.Replace(templateDataStr, "{{TARGET_NAME}}", target, -1)
     templateDataStr = strings.Replace(templateDataStr, "{{BOARD}}", board, -1)
@@ -75,8 +77,9 @@ func CreateAppMainCMakeLists(appName string, appPath string, board string, frame
         return err
     }
 
-    templateDataStr := strings.Replace(string(templateData), "{{TOOLCHAIN_FILE}}", toolChainPath, -1)
-    templateDataStr = strings.Replace(templateDataStr, "{{PROJECT_PATH}}", appPath, -1)
+    templateDataStr := strings.Replace(string(templateData), "{{TOOLCHAIN_FILE}}",
+        filepath.ToSlash(toolChainPath), -1)
+    templateDataStr = strings.Replace(templateDataStr, "{{PROJECT_PATH}}", filepath.ToSlash(appPath), -1)
     templateDataStr = strings.Replace(templateDataStr, "{{PROJECT_NAME}}", appName, -1)
     templateDataStr = strings.Replace(templateDataStr, "{{TARGET_NAME}}", target, -1)
     templateDataStr = strings.Replace(templateDataStr, "{{BOARD}}", board, -1)

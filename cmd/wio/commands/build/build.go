@@ -7,15 +7,17 @@
 package build
 
 import (
-    "wio/cmd/wio/commands"
     "os"
     "github.com/urfave/cli"
     "wio/cmd/wio/utils/io"
     "wio/cmd/wio/types"
+    "wio/cmd/wio/parsers/cmake"
+    "os/exec"
+    "wio/cmd/wio/commands"
+    "wio/cmd/wio/utils"
     "wio/cmd/wio/utils/io/log"
     "path/filepath"
-    "os/exec"
-    "wio/cmd/wio/parsers/cmake"
+    "wio/cmd/wio/commands/clean"
 )
 
 type Build struct {
@@ -23,14 +25,20 @@ type Build struct {
     error
 }
 
-// Compiles the project
+// Runs the build command when cli build option is provided
 func (build Build) Execute() {
-    directory, err := filepath.Abs(build.Context.String("directory"))
+    RunBuild(build.Context.String("directory"), build.Context.String("target"),
+        build.Context.Bool("clean"))
+}
+
+// This function allows other packages to call build as well. This is also used when cli build is executed
+func RunBuild(directoryCli string, targetCli string, cleanCli bool) {
+    directory, err := filepath.Abs(directoryCli)
     commands.RecordError(err, "")
 
-    clean := build.Context.Bool("clean")
+    clean := cleanCli
 
-    targetToBuildName := build.Context.String("target")
+    targetToBuildName := targetCli
     var name string
     var currTargets types.TargetsTag
     var targetToBuild *types.TargetTag
@@ -42,6 +50,12 @@ func (build Build) Execute() {
 
     // try parsing app type and if it comes empty this means our project is pkg type
     appConfig := types.AppConfig{}
+
+    // check if wio.yml file exits
+    if !utils.PathExists(directory + io.Sep + "wio.yml") {
+        log.Error(true, "wio.yml file not found. Not a valid wio project!")
+    }
+
     commands.RecordError(io.NormalIO.ParseYml(configPath, &appConfig), "")
 
     // this means we need to parse pkg type
@@ -74,11 +88,9 @@ func (build Build) Execute() {
         }
     }
 
-    log.Norm.Red(true, name)
-
     // clean the build files if clean flag is true
     if clean {
-        cleanBuildFiles(directory)
+        cleanBuildFiles(directory, targetToBuildName)
     }
 
     // create the target
@@ -91,6 +103,7 @@ func (build Build) Execute() {
     // remove the target
     removeTarget(directory)
 }
+
 
 func removeTarget(directory string) {
     cmakePath := directory + io.Sep + ".wio" + io.Sep + "build" + io.Sep + "CMakeLists.txt"
@@ -135,30 +148,27 @@ func buildTarget(directory string, targetName string) (error) {
         return err
     }
 
-    cmakeCommand := exec.Command("cmake", "../../")
-    makeCommand := exec.Command("make")
+    // execute cmake command
+    cmakeCommand := exec.Command("cmake", "../../", "-G", "Unix Makefiles")
     cmakeCommand.Dir = targetPath
-    makeCommand.Dir = targetPath
     cmakeCommand.Stdout = os.Stdout
+    err := cmakeCommand.Run()
+    if err != nil {
+        os.Stderr.WriteString(err.Error())
+    }
+
+    // execute make command
+    makeCommand := exec.Command("make")
+    makeCommand.Dir = targetPath
     makeCommand.Stdout = os.Stdout
-    cmakeCommand.Stderr = os.Stderr
-    makeCommand.Stderr = os.Stderr
-
-    if err := cmakeCommand.Run(); err != nil {
-        return err
+    err = makeCommand.Run()
+    if err != nil {
+        os.Stderr.WriteString(err.Error())
     }
-
-    log.Norm.Write(true, "\n\n")
-
-    if err := makeCommand.Run(); err != nil {
-        return err
-    }
-
-    log.Norm.Write(true, "\n\n")
 
     return nil
 }
 
-func cleanBuildFiles(directory string) {
-    // clean.Execute()
+func cleanBuildFiles(directory string, target string) {
+    clean.RunClean(directory, target, true)
 }

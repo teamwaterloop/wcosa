@@ -43,20 +43,29 @@ func writeProjectConfig(lines []string, path string) error {
 
 // Write configuration for the project with information on top and nice spacing
 func PrettyPrintConfig(projectConfig interface{}, filePath string) (error) {
-    infoPath := "templates" + Sep + "config" + Sep + "wio-help.txt"
+    appInfoPath := "templates" + Sep + "config" + Sep + "app-helper.txt"
+    pkgInfoPath := "templates" + Sep + "config" + Sep + "pkg-helper.txt"
+    targetsInfoPath := "templates" + Sep + "config" + Sep + "targets-helper.txt"
+    dependenciesInfoPath := "templates" + Sep + "config" + Sep + "dependencies-helper.txt"
+
 
     var ymlData []byte
-    var infoData []byte
+    var appInfoData []byte
+    var pkgInfoData []byte
+    var targetsInfoData []byte
+    var dependenciesInfoData []byte
     var err error
 
     // get data
     if ymlData, err = yaml.Marshal(projectConfig); err != nil { return err }
-    if infoData, err = AssetIO.ReadFile(infoPath); err != nil { return err }
+    if appInfoData, err = AssetIO.ReadFile(appInfoPath); err != nil { return err }
+    if pkgInfoData, err = AssetIO.ReadFile(pkgInfoPath); err != nil { return err }
+    if targetsInfoData, err = AssetIO.ReadFile(targetsInfoPath); err != nil { return err }
+    if dependenciesInfoData, err = AssetIO.ReadFile(dependenciesInfoPath); err != nil { return err }
 
     finalString := ""
     currentString := strings.Split(string(ymlData), "\n")
 
-    infoDataSlice :=  strings.Split(string(infoData), "\n\n")
     beautify := false
     first := false
 
@@ -68,17 +77,17 @@ func PrettyPrintConfig(projectConfig interface{}, filePath string) (error) {
         }
 
         if strings.Contains(currLine, "app:") {
-            finalString += infoDataSlice[0] + "\n"
+            finalString += string(appInfoData) + "\n"
         } else if strings.Contains(currLine, "pkg:") {
-            finalString += infoDataSlice[1] + "\n"
+            finalString += string(pkgInfoData) + "\n"
         } else if strings.Contains(currLine, "targets:") {
-            finalString += infoDataSlice[2] + "\n"
+            finalString += "\n" + string(targetsInfoData) + "\n"
         } else if strings.Contains(currLine, "create:") {
             beautify = true
         } else if strings.Contains(currLine, "dependencies:") {
             beautify = true
             first = false
-            finalString += infoDataSlice[3] + "\n"
+            finalString += "\n" + string(dependenciesInfoData) + "\n"
         } else if beautify && !first {
             first = true
         } else if !strings.Contains(currLine, "compile_flags:") && beautify {
