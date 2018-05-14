@@ -8,5 +8,5 @@ file: "none"
 port: "none"
 version: "0.0.1"
 board: "uno"
-btarget: "all"        # build target
+btarget: "default"        # build target
 utarget: "default"    # upload target

@@ -70,25 +70,8 @@ type DependencyTag struct {
     Compile_flags []string
 }
 
-// Structure to handle individual dependency inside dependencies
-type PackageLockTag struct {
-    Name          string
-    Hash          string
-    Path          string
-    Source        string
-    Compile_flags []string
-}
-
-// type for the libraries tag in the libs.lock file
-type PackagesLockTag map[string]*PackageLockTag
-
 // type for the libraries tag in the main wio.yml file
 type DependenciesTag map[string]*DependencyTag
-
-// type for whole libs.lock file
-type PackagesLockConfig struct {
-    Packages PackagesLockTag
-}
 
 // DConfig contains configurations for default commandline arguments
 type DConfig struct {

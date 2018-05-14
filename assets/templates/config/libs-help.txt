@@ -1,6 +1,0 @@
-# "libraries" tag contains all direct libraries you included in your project. They are managed
-# by wio packager
-
-
-# "dependencies" tag contains dependencies for each library that is included. Compile flags can be
-# defined for each dependency to customize build process

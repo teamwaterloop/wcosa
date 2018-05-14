@@ -1,16 +1,23 @@
-set(VER 3.0.0)
-set(NAME {{project-name}})
+set(CMAKE_VER 3.0.0)
+set(PROJECT_NAME {{PROJECT_NAME}})
+set(PROJECT_PATH "{{PROJECT_PATH}}")
+set(CMAKE_TOOLCHAIN_FILE "{{TOOLCHAIN_FILE}}")
+set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+set(DEPENDENCY_FILE dependencies)
 
-set(CMAKE_TOOLCHAIN_FILE "{{toolchain-path}}")
+# properties
+set(TARGET_NAME {{TARGET_NAME}})
+set(BOARD {{BOARD}})
+set(FRAMEWORK {{FRAMEWORK}})
 
-cmake_minimum_required(VERSION ${VER})
-project(${NAME} C CXX ASM)
+cmake_minimum_required(VERSION ${CMAKE_VERSION})
+project(${PROJECT_NAME} C CXX ASM)
+cmake_policy(SET CMP0023 OLD)
 
-file(GLOB_RECURSE SRC_FILES "../src/*.cpp" "../src/*.cc" "../src/*.c")
+include(${DEPENDENCY_FILE})
 
-# create the firmware
-generate_arduino_firmware({{target-name}}
+file(GLOB_RECURSE SRC_FILES "${PROJECT_PATH}/src/*.cpp" "${PROJECT_PATH}/src/*.cc" "${PROJECT_PATH}/src/*.c")
+generate_arduino_firmware(${TARGET_NAME}
     SRCS ${SRC_FILES}
-    BOARD {{board}})
-target_compile_definitions({{target-name}} PRIVATE __AVR_{{framework}}__ {{target-flags}})
-
+    BOARD ${BOARD})
+target_compile_definitions(${TARGET_NAME} PRIVATE __AVR_${FRAMEWORK}__ {{TARGET_COMPILE_FLAGS}})

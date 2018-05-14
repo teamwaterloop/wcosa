@@ -10,7 +10,7 @@
 // ../../assets/templates/config/libs-help.txt
 // ../../assets/templates/config/libs.yml
 // ../../assets/templates/config/project-app.yml
-// ../../assets/templates/config/project-lib.yml
+// ../../assets/templates/config/project-pkg.yml
 // ../../assets/templates/config/wio-help.txt
 // ../../assets/templates/gitignore/.gitignore-clion
 // ../../assets/templates/gitignore/.gitignore-general
@@ -294,7 +294,7 @@ var _assetsTemplatesConfigProjectLibYml = "\x1f\x8b\x08\x00\x00\x00\x00\x00\x00\
 func assetsTemplatesConfigProjectLibYmlBytes() ([]byte, error) {
 	return bindataRead(
 		_assetsTemplatesConfigProjectLibYml,
-		"assets/templates/config/project-lib.yml",
+		"assets/templates/config/project-pkg.yml",
 	)
 }
 
@@ -304,7 +304,7 @@ func assetsTemplatesConfigProjectLibYml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/config/project-lib.yml", size: 289, mode: os.FileMode(420), modTime: time.Unix(1523446329, 0)}
+	info := bindataFileInfo{name: "assets/templates/config/project-pkg.yml", size: 289, mode: os.FileMode(420), modTime: time.Unix(1523446329, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -591,7 +591,7 @@ var _bindata = map[string]func() (*asset, error){
 	"assets/templates/config/libs-help.txt": assetsTemplatesConfigLibsHelpTxt,
 	"assets/templates/config/libs.yml": assetsTemplatesConfigLibsYml,
 	"assets/templates/config/project-app.yml": assetsTemplatesConfigProjectAppYml,
-	"assets/templates/config/project-lib.yml": assetsTemplatesConfigProjectLibYml,
+	"assets/templates/config/project-pkg.yml": assetsTemplatesConfigProjectLibYml,
 	"assets/templates/config/wio-help.txt": assetsTemplatesConfigWioHelpTxt,
 	"assets/templates/gitignore/.gitignore-clion": assetsTemplatesGitignoreGitignoreClion,
 	"assets/templates/gitignore/.gitignore-general": assetsTemplatesGitignoreGitignoreGeneral,
@@ -662,7 +662,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 				"libs-help.txt": &bintree{assetsTemplatesConfigLibsHelpTxt, map[string]*bintree{}},
 				"libs.yml": &bintree{assetsTemplatesConfigLibsYml, map[string]*bintree{}},
 				"project-app.yml": &bintree{assetsTemplatesConfigProjectAppYml, map[string]*bintree{}},
-				"project-lib.yml": &bintree{assetsTemplatesConfigProjectLibYml, map[string]*bintree{}},
+				"project-pkg.yml": &bintree{assetsTemplatesConfigProjectLibYml, map[string]*bintree{}},
 				"wio-help.txt": &bintree{assetsTemplatesConfigWioHelpTxt, map[string]*bintree{}},
 			}},
 			"gitignore": &bintree{nil, map[string]*bintree{

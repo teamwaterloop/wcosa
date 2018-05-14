@@ -18,7 +18,6 @@ import (
     "bufio"
     "strings"
     "wio/cmd/wio/commands"
-    "wio/cmd/wio/parsers/cmake"
 )
 
 const (
@@ -119,7 +118,7 @@ func (create Create) createStructure(directory string, delete bool) {
     }
 
     commands.RecordError(os.MkdirAll(directory+io.Sep+"src", os.ModePerm), "failure")
-    commands.RecordError(os.MkdirAll(directory+io.Sep+".wio"+io.Sep+"target", os.ModePerm), "failure")
+    commands.RecordError(os.MkdirAll(directory+io.Sep+".wio"+io.Sep+"build", os.ModePerm), "failure")
 
     if create.Type == PKG {
         /// each package will have an include method
@@ -182,9 +181,6 @@ func (create Create) updateProjectSetup(createPacket *PacketCreate) {
         checkFrameworkAndPlatform(&projectConfig.MainTag.Framework,
             &projectConfig.MainTag.Platform, &defaults)
 
-        cmake.FullCMakeCreationWithDepsParsing(createPacket.name, createPacket.directory, createPacket.framework,
-            projectConfig.TargetsTag, projectConfig.DependenciesTag, false, nil)
-
         config = projectConfig
     } else {
         projectConfig := &types.PkgConfig{}
@@ -209,10 +205,6 @@ func (create Create) updateProjectSetup(createPacket *PacketCreate) {
         // check frameworks and platform
         checkFrameworkArrayAndPlatform(&projectConfig.MainTag.Framework,
             &projectConfig.MainTag.Platform, &defaults)
-
-        cmake.FullCMakeCreationWithDepsParsing(createPacket.name, createPacket.directory, createPacket.framework,
-            projectConfig.TargetsTag, projectConfig.DependenciesTag, true,
-                projectConfig.MainTag.Compile_flags)
 
         config = projectConfig
     }
@@ -275,11 +267,6 @@ func (create Create) initialProjectSetup(createPacket *PacketCreate) {
         create.handleTargets(&targetsTag, createPacket.board)
 
         config = projectConfig
-
-        // Populate CMakeLists.txt for the whole project
-        commands.RecordError(cmake.CreateAppMainCMakeLists(createPacket.name, createPacket.directory,
-            createPacket.board, createPacket.framework, defaultTarget, targetsTag.Targets[defaultTarget].Compile_flags),
-                "failure")
     } else {
         projectConfig := &types.PkgConfig{}
         defaultTarget = "tests"
@@ -298,11 +285,6 @@ func (create Create) initialProjectSetup(createPacket *PacketCreate) {
         create.handleTargets(&targetsTag, createPacket.board)
 
         config = projectConfig
-
-        // Populate CMakeLists.txt file for the whole project
-        commands.RecordError(cmake.CreatePkgMainCMakeLists(createPacket.name, createPacket.directory, createPacket.board,
-            createPacket.framework, defaultTarget, targetsTag.Targets[defaultTarget].Compile_flags,
-                projectConfig.MainTag.Compile_flags), "failure")
     }
 
     commands.RecordError(utils.PrettyPrintConfig(config, createPacket.directory+io.Sep+"wio.yml"),
