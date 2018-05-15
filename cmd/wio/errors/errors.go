@@ -4,7 +4,6 @@ type Error interface {
     error
 }
 
-
 // An error for exceptions that are intended to be seen by the user.
 //
 // These exceptions won't have any debugging information printed when they're
@@ -20,12 +19,6 @@ type FileError struct {
     path string
 }
 
-
-
-
-
-
-
 type IoError struct {
     error
 }
@@ -34,14 +27,7 @@ func (ioError IoError) GetType() string {
     return "ioError"
 }
 
-
-
-
-
-
-
-
-func main () {
+func main() {
     err := IoError{}
     err.GetType()
 }

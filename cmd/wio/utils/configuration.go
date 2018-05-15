@@ -2,7 +2,6 @@
 // Use of this source code is governed by a MIT
 // license that can be found in the LICENSE file.
 
-
 // Package utils contains utilities/files useful throughout the app
 // This file contains all the function to manipulate project configuration file
 
@@ -15,7 +14,6 @@ import (
     "gopkg.in/yaml.v2"
     "os"
 
-    . "wio/cmd/wio/utils/io"
 )
 
 // Adds spacing and other formatting for project configuration
@@ -48,7 +46,6 @@ func PrettyPrintConfig(projectConfig interface{}, filePath string) (error) {
     targetsInfoPath := "templates" + Sep + "config" + Sep + "targets-helper.txt"
     dependenciesInfoPath := "templates" + Sep + "config" + Sep + "dependencies-helper.txt"
 
-
     var ymlData []byte
     var appInfoData []byte
     var pkgInfoData []byte
@@ -57,11 +54,21 @@ func PrettyPrintConfig(projectConfig interface{}, filePath string) (error) {
     var err error
 
     // get data
-    if ymlData, err = yaml.Marshal(projectConfig); err != nil { return err }
-    if appInfoData, err = AssetIO.ReadFile(appInfoPath); err != nil { return err }
-    if pkgInfoData, err = AssetIO.ReadFile(pkgInfoPath); err != nil { return err }
-    if targetsInfoData, err = AssetIO.ReadFile(targetsInfoPath); err != nil { return err }
-    if dependenciesInfoData, err = AssetIO.ReadFile(dependenciesInfoPath); err != nil { return err }
+    if ymlData, err = yaml.Marshal(projectConfig); err != nil {
+        return err
+    }
+    if appInfoData, err = AssetIO.ReadFile(appInfoPath); err != nil {
+        return err
+    }
+    if pkgInfoData, err = AssetIO.ReadFile(pkgInfoPath); err != nil {
+        return err
+    }
+    if targetsInfoData, err = AssetIO.ReadFile(targetsInfoPath); err != nil {
+        return err
+    }
+    if dependenciesInfoData, err = AssetIO.ReadFile(dependenciesInfoPath); err != nil {
+        return err
+    }
 
     finalString := ""
     currentString := strings.Split(string(ymlData), "\n")
@@ -93,7 +100,7 @@ func PrettyPrintConfig(projectConfig interface{}, filePath string) (error) {
         } else if !strings.Contains(currLine, "compile_flags:") && beautify {
             simpleString := strings.Trim(currLine, " ")
 
-            if simpleString[len(simpleString) - 1] == ':' {
+            if simpleString[len(simpleString)-1] == ':' {
                 finalString += "\n"
             }
         }

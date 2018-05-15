@@ -105,13 +105,11 @@ func parsePackage(packagePath string, depTree *parsers.DependencyTree, dependenc
         }
     }
 
-
     if val, ok := dependencies[depTree.Config.Name]; ok {
         allFlags := utils.AppendIfMissing(val.Compile_flags, depTree.Config.Compile_flags)
 
         depTree.Config.Compile_flags = allFlags
     }
-
 
     return nil
 }
@@ -150,8 +148,8 @@ func parsePackages(packagesPath string, depTrees []*parsers.DependencyTree, depe
 // Parses all the packages and their dependencies and creates pkg.lock file
 func createDependencyTree(projectPath string, dependencies types.DependenciesTag) ([]*parsers.DependencyTree, error) {
     wioPath := projectPath + io.Sep + ".wio"
-    librariesLocalPath := wioPath + io.Sep + "pkg" +  io.Sep + vendorPkgFolder
-    librariesRemotePath := wioPath + io.Sep + "pkg" +  io.Sep + remotePkgFolder
+    librariesLocalPath := wioPath + io.Sep + "pkg" + io.Sep + vendorPkgFolder
+    librariesRemotePath := wioPath + io.Sep + "pkg" + io.Sep + remotePkgFolder
 
     dependencyTrees := make([]*parsers.DependencyTree, 0)
 
@@ -225,16 +223,16 @@ func ParseDepsAndCreateCMake(projectPath string, dependencies types.Dependencies
 
     for tree := range dependencyTree {
         if str, err := createDependencyCMakeString(dependencyTree[tree]);
-        err != nil {
+            err != nil {
             return nil, err
         } else {
             finalBuildString += str
         }
     }
 
-    if err := io.NormalIO.WriteFile(projectPath + io.Sep + ".wio" + io.Sep + "build" + io.Sep + "dependencies.cmake",
+    if err := io.NormalIO.WriteFile(projectPath+io.Sep+".wio"+io.Sep+"build"+io.Sep+"dependencies.cmake",
         []byte(finalBuildString)); err != nil {
-            return nil, err
+        return nil, err
     }
 
     return dependencyTree, nil

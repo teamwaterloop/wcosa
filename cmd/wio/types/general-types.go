@@ -52,14 +52,14 @@ type PkgTag struct {
 }
 
 type AppConfig struct {
-    MainTag     AppTag      `yaml:"app"`
-    TargetsTag  TargetsTag  `yaml:"targets"`
+    MainTag         AppTag          `yaml:"app"`
+    TargetsTag      TargetsTag      `yaml:"targets"`
     DependenciesTag DependenciesTag `yaml:"dependencies"`
 }
 
 type PkgConfig struct {
-    MainTag     PkgTag      `yaml:"pkg"`
-    TargetsTag  TargetsTag  `yaml:"targets"`
+    MainTag         PkgTag          `yaml:"pkg"`
+    TargetsTag      TargetsTag      `yaml:"targets"`
     DependenciesTag DependenciesTag `yaml:"dependencies"`
 }
 
@@ -75,14 +75,13 @@ type DependenciesTag map[string]*DependencyTag
 
 // DConfig contains configurations for default commandline arguments
 type DConfig struct {
-    Ide string
+    Ide       string
     Framework string
-    Platform string
-    File string
-    Port string
-    Version string
-    Board string
-    Btarget string
-    Utarget string
+    Platform  string
+    File      string
+    Port      string
+    Version   string
+    Board     string
+    Btarget   string
+    Utarget   string
 }
-

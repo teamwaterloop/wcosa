@@ -9,6 +9,10 @@ BINARY_UNIX=$(BINARY_NAME)_unix
 
 all: build run
 
+get:
+    go get -u github.com/jteeuwen/go-bindata/...
+    gogo get -u github.com/kardianos/govendor
+
 build:
 	@echo Building $(BINARY_NAME) project:
 	@cd "$(CURDIR)/cmd/$(BINARY_NAME)/utils/io" && go-bindata -nomemcopy -pkg io -prefix ../../../../ ../../../../assets/...

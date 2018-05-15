@@ -4,9 +4,11 @@ import (
     "github.com/go-errors/errors"
     "os"
     "wio/cmd/wio/utils/io/log"
+    "github.com/urfave/cli"
 )
 
 type Command interface {
+    GetContext() (*cli.Context)
     Execute()
 }
 

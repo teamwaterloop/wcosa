@@ -7,20 +7,25 @@
 package run
 
 import (
-	"github.com/urfave/cli"
-	"wio/cmd/wio/commands/build"
+    "github.com/urfave/cli"
+    "wio/cmd/wio/commands/build"
 )
 
 type Run struct {
-	Context *cli.Context
-	error
+    Context *cli.Context
+    error
+}
+
+// get context for the command
+func (run Run) GetContext() (*cli.Context) {
+    return run.Context
 }
 
 // Runs the build command when cli build option is provided
 func (run Run) Execute() {
-	// execute build command
-	build.RunBuild(run.Context.String("directory"), run.Context.String("target"),
-		run.Context.Bool("clean"))
+    // execute build command
+    build.RunBuild(run.Context.String("dir"), run.Context.String("target"),
+        run.Context.Bool("clean"))
 
-	// execute upload command
+    // execute upload command
 }
