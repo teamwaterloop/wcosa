@@ -25,9 +25,14 @@ type Build struct {
     error
 }
 
+// get context for the command
+func (build Build) GetContext() (*cli.Context) {
+    return build.Context
+}
+
 // Runs the build command when cli build option is provided
 func (build Build) Execute() {
-    RunBuild(build.Context.String("directory"), build.Context.String("target"),
+    RunBuild(build.Context.String("dir"), build.Context.String("target"),
         build.Context.Bool("clean"))
 }
 
@@ -36,7 +41,7 @@ func RunBuild(directoryCli string, targetCli string, cleanCli bool) {
     directory, err := filepath.Abs(directoryCli)
     commands.RecordError(err, "")
 
-    clean := cleanCli
+    cleanStr := cleanCli
 
     targetToBuildName := targetCli
     var name string
@@ -89,7 +94,7 @@ func RunBuild(directoryCli string, targetCli string, cleanCli bool) {
     }
 
     // clean the build files if clean flag is true
-    if clean {
+    if cleanStr {
         cleanBuildFiles(directory, targetToBuildName)
     }
 
@@ -103,7 +108,6 @@ func RunBuild(directoryCli string, targetCli string, cleanCli bool) {
     // remove the target
     removeTarget(directory)
 }
-
 
 func removeTarget(directory string) {
     cmakePath := directory + io.Sep + ".wio" + io.Sep + "build" + io.Sep + "CMakeLists.txt"

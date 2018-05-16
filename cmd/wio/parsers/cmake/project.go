@@ -55,7 +55,7 @@ func CreatePkgMainCMakeLists(pkgName string, pkgPath string, board string, frame
         templateDataStr += currLinkString + "\n"
     }
 
-    return io.NormalIO.WriteFile(pkgPath + io.Sep + ".wio" + io.Sep + "build" + io.Sep + "CMakeLists.txt",
+    return io.NormalIO.WriteFile(pkgPath+io.Sep+".wio"+io.Sep+"build"+io.Sep+"CMakeLists.txt",
         []byte(templateDataStr))
 }
 
@@ -96,7 +96,6 @@ func CreateAppMainCMakeLists(appName string, appPath string, board string, frame
         templateDataStr += currLinkString + "\n"
     }
 
-
-    return io.NormalIO.WriteFile(appPath + io.Sep + ".wio" + io.Sep + "build" + io.Sep + "CMakeLists.txt",
+    return io.NormalIO.WriteFile(appPath+io.Sep+".wio"+io.Sep+"build"+io.Sep+"CMakeLists.txt",
         []byte(templateDataStr))
 }

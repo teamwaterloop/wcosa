@@ -7,41 +7,46 @@
 package clean
 
 import (
-	"github.com/urfave/cli"
-	"path/filepath"
-	"wio/cmd/wio/commands"
-	"os"
-	"wio/cmd/wio/utils/io"
-	"wio/cmd/wio/utils"
+    "github.com/urfave/cli"
+    "path/filepath"
+    "wio/cmd/wio/commands"
+    "os"
+    "wio/cmd/wio/utils/io"
+    "wio/cmd/wio/utils"
 )
 
 type Clean struct {
-	Context *cli.Context
-	error
+    Context *cli.Context
+    error
+}
+
+// get context for the command
+func (clean Clean) GetContext() (*cli.Context) {
+    return clean.Context
 }
 
 // Runs the build command when cli build option is provided
 func (clean Clean) Execute() {
-	RunClean(clean.Context.String("directory"), clean.Context.String("target"),
-		clean.Context.IsSet("target"))
+    RunClean(clean.Context.String("dir"), clean.Context.String("target"),
+        clean.Context.IsSet("target"))
 }
 
 func RunClean(directoryCli string, targetCli string, targetProvided bool) {
-	directory, err := filepath.Abs(directoryCli)
-	commands.RecordError(err, "")
+    directory, err := filepath.Abs(directoryCli)
+    commands.RecordError(err, "")
 
-	targetToCleanName := targetCli
+    targetToCleanName := targetCli
 
-	if !targetProvided {
-		// clean everything
-		commands.RecordError(os.RemoveAll(directory + io.Sep + ".wio" + io.Sep + "build" + io.Sep + "targets"), "")
-	} else {
-		// clean an individual target
-		targetPath := directory + io.Sep + ".wio" + io.Sep + "build" + io.Sep + "targets" + io.Sep + targetToCleanName
+    if !targetProvided {
+        // clean everything
+        commands.RecordError(os.RemoveAll(directory+io.Sep+".wio"+io.Sep+"build"+io.Sep+"targets"), "")
+    } else {
+        // clean an individual target
+        targetPath := directory + io.Sep + ".wio" + io.Sep + "build" + io.Sep + "targets" + io.Sep + targetToCleanName
 
-		if utils.PathExists(targetPath) {
-			// delete the target
-			commands.RecordError(os.RemoveAll(targetPath), "")
-		}
-	}
+        if utils.PathExists(targetPath) {
+            // delete the target
+            commands.RecordError(os.RemoveAll(targetPath), "")
+        }
+    }
 }

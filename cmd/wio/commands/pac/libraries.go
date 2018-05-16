@@ -13,24 +13,29 @@ import (
 )
 
 const (
-    GET = "get"
-    UPDATE = "update"
+    GET     = "get"
+    UPDATE  = "update"
     COLLECT = "collect"
 )
 
-type Libraries struct {
+type Pac struct {
     Context *cli.Context
-    Type string
+    Type    string
     error
 }
 
-// Executes the libraries command
-func (libraries Libraries) Execute() {
+// Get context for the command
+func (pac Pac) GetContext() (*cli.Context) {
+    return pac.Context
+}
 
-    switch libraries.Type {
+// Executes the libraries command
+func (pac Pac) Execute() {
+
+    switch pac.Type {
     case GET:
-        libraries.error = errors.New("GG")
-        libraries.handleGet(libraries.Context)
+        pac.error = errors.New("GG")
+        pac.handleGet(pac.Context)
         break
     case UPDATE:
         break
@@ -38,8 +43,8 @@ func (libraries Libraries) Execute() {
         break
     }
 }
-func (libraries Libraries) handleGet(context *cli.Context) {
-    if libraries.error != nil {
+func (pac Pac) handleGet(context *cli.Context) {
+    if pac.error != nil {
         return
     }
 

@@ -28,19 +28,24 @@ const (
 /// This structure wraps all the important features needed for a create and update command
 type PacketCreate struct {
     directory string
-    name string
-    board string
+    name      string
+    board     string
     framework string
-    platform string
-    ide string
-    tests bool
+    platform  string
+    ide       string
+    tests     bool
 }
 
 type Create struct {
     Context *cli.Context
     Type    string
     Update  bool
-    error error
+    error   error
+}
+
+// get context for the command
+func (create Create) GetContext() (*cli.Context) {
+    return create.Context
 }
 
 // Executes the create command
@@ -140,7 +145,6 @@ func (create Create) updateProject(createPacket *PacketCreate) {
     create.postPrint()
 }
 
-
 /// This is one of the most important step as this sets up the project when update command is used.
 /// This also updates the wio.yml file so that it can be fixed and current configurations can be applied.
 func (create Create) updateProjectSetup(createPacket *PacketCreate) {
@@ -149,11 +153,11 @@ func (create Create) updateProjectSetup(createPacket *PacketCreate) {
 
     if createPacket.ide == "clion" {
         // copy gitignore file
-        io.AssetIO.CopyFile("templates/gitignore/.gitignore-clion", createPacket.directory + "/.gitignore",
+        io.AssetIO.CopyFile("templates/gitignore/.gitignore-clion", createPacket.directory+"/.gitignore",
             false)
     } else {
         // copy gitignore file
-        io.AssetIO.CopyFile("templates/gitignore/.gitignore-general", createPacket.directory + "/.gitignore",
+        io.AssetIO.CopyFile("templates/gitignore/.gitignore-general", createPacket.directory+"/.gitignore",
             false)
     }
 
@@ -161,13 +165,12 @@ func (create Create) updateProjectSetup(createPacket *PacketCreate) {
     defaults := types.DConfig{}
     commands.RecordError(io.AssetIO.ParseYml("config/defaults.yml", &defaults), "failure")
 
-
     var config interface{}
 
     if create.Type == APP {
         projectConfig := &types.AppConfig{}
 
-        commands.RecordError(io.NormalIO.ParseYml(createPacket.directory + io.Sep + "wio.yml", projectConfig),
+        commands.RecordError(io.NormalIO.ParseYml(createPacket.directory+io.Sep+"wio.yml", projectConfig),
             "failure")
 
         // update the name of the project
@@ -185,7 +188,7 @@ func (create Create) updateProjectSetup(createPacket *PacketCreate) {
     } else {
         projectConfig := &types.PkgConfig{}
 
-        commands.RecordError(io.NormalIO.ParseYml(createPacket.directory + io.Sep + "wio.yml", projectConfig),
+        commands.RecordError(io.NormalIO.ParseYml(createPacket.directory+io.Sep+"wio.yml", projectConfig),
             "failure")
 
         // update the name of the project
@@ -405,7 +408,7 @@ func (create Create) checkUpdate(directory string) (bool) {
 /// function to parse the paths.json file and then get files based on the project type.
 func copyTemplates(projectPath string, appType string, ide string, jsonPath string) (error) {
     strArray := make([]string, 0)
-    strArray = append(strArray, appType + "-gen")
+    strArray = append(strArray, appType+"-gen")
 
     if ide == "clion" {
         strArray = append(strArray, appType+"-clion")

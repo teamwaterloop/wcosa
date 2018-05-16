@@ -125,7 +125,7 @@ func assetsConfigDefaultsYml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/config/defaults.yml", size: 324, mode: os.FileMode(438), modTime: time.Unix(1526248727, 0)}
+	info := bindataFileInfo{name: "assets/config/defaults.yml", size: 324, mode: os.FileMode(438), modTime: time.Unix(1526258808, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -185,7 +185,7 @@ func assetsTemplatesCmakeCmakelistsappTxtTpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/cmake/CMakeListsApp.txt.tpl", size: 781, mode: os.FileMode(438), modTime: time.Unix(1526248727, 0)}
+	info := bindataFileInfo{name: "assets/templates/cmake/CMakeListsApp.txt.tpl", size: 781, mode: os.FileMode(438), modTime: time.Unix(1526258808, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -205,7 +205,7 @@ func assetsTemplatesCmakeCmakelistspkgTxtTpl() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/cmake/CMakeListsPkg.txt.tpl", size: 1105, mode: os.FileMode(438), modTime: time.Unix(1526248727, 0)}
+	info := bindataFileInfo{name: "assets/templates/cmake/CMakeListsPkg.txt.tpl", size: 1105, mode: os.FileMode(438), modTime: time.Unix(1526258808, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -225,7 +225,7 @@ func assetsTemplatesCmakeDependenciesTxt() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/cmake/dependencies.txt", size: 481, mode: os.FileMode(438), modTime: time.Unix(1526248727, 0)}
+	info := bindataFileInfo{name: "assets/templates/cmake/dependencies.txt", size: 481, mode: os.FileMode(438), modTime: time.Unix(1526258808, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -245,7 +245,7 @@ func assetsTemplatesConfigAppHelperTxt() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/config/app-helper.txt", size: 582, mode: os.FileMode(438), modTime: time.Unix(1526249878, 0)}
+	info := bindataFileInfo{name: "assets/templates/config/app-helper.txt", size: 582, mode: os.FileMode(438), modTime: time.Unix(1526258808, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -265,7 +265,7 @@ func assetsTemplatesConfigDependenciesHelperTxt() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/config/dependencies-helper.txt", size: 738, mode: os.FileMode(438), modTime: time.Unix(1526249892, 0)}
+	info := bindataFileInfo{name: "assets/templates/config/dependencies-helper.txt", size: 738, mode: os.FileMode(438), modTime: time.Unix(1526258808, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -285,7 +285,7 @@ func assetsTemplatesConfigPkgHelperTxt() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/config/pkg-helper.txt", size: 959, mode: os.FileMode(438), modTime: time.Unix(1526249912, 0)}
+	info := bindataFileInfo{name: "assets/templates/config/pkg-helper.txt", size: 959, mode: os.FileMode(438), modTime: time.Unix(1526258808, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -325,7 +325,7 @@ func assetsTemplatesConfigProjectPkgYml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/config/project-pkg.yml", size: 253, mode: os.FileMode(438), modTime: time.Unix(1526246066, 0)}
+	info := bindataFileInfo{name: "assets/templates/config/project-pkg.yml", size: 253, mode: os.FileMode(438), modTime: time.Unix(1526258808, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -345,7 +345,7 @@ func assetsTemplatesConfigTargetsHelperTxt() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "assets/templates/config/targets-helper.txt", size: 303, mode: os.FileMode(438), modTime: time.Unix(1526249920, 0)}
+	info := bindataFileInfo{name: "assets/templates/config/targets-helper.txt", size: 303, mode: os.FileMode(438), modTime: time.Unix(1526258808, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

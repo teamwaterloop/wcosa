@@ -77,5 +77,5 @@ func AppendIfMissing(slice []string, slice2 []string) []string {
 }
 
 func ToLinixPath(path string) {
-    
+
 }
