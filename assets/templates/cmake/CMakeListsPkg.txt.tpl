@@ -26,5 +26,6 @@ file(GLOB_RECURSE SRC_FILES "${PROJECT_PATH}/test/*.cpp" "${PROJECT_PATH}/test/*
 generate_arduino_firmware(${TARGET_NAME}
     SRCS ${SRC_FILES}
     LIBS ${PROJECT_NAME}
-    BOARD ${BOARD})
+    BOARD ${BOARD}
+    PORT {{PORT}})
 target_compile_definitions(${TARGET_NAME} PRIVATE __AVR_${FRAMEWORK}__ {{TARGET_COMPILE_FLAGS}})
