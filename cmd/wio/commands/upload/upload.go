@@ -10,8 +10,6 @@ import (
     "github.com/urfave/cli"
     "github.com/GuoXi/go-serial/enumerator"
     "fmt"
-    "github.com/google/gousb/usbid"
-    "github.com/google/gousb"
 )
 
 type Upload struct {
@@ -30,22 +28,6 @@ func (upload Upload) Execute() {
         upload.Context.String("port"))
 }
 
-func getDeviceDescription (pid string) (string, error) {
-    ctx := gousb.NewContext()
-    defer ctx.Close()
-
-    description := ""
-
-    _, err := ctx.OpenDevices(func(desc *gousb.DeviceDesc) bool {
-        if pid == desc.Product.String() {
-            description = usbid.Describe(desc)
-        }
-
-        return false
-    })
-
-    return description, err
-}
 
 
 // This function allows other packages to call build as well. This is also used when cli build is executed
@@ -106,7 +88,6 @@ func RunUpload(directoryCli string, targetCli string, port string) {
         _ = dev
     }
     */
-
 
     ports, _ := enumerator.GetDetailedPortsList()
 
