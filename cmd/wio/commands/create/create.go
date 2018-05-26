@@ -18,6 +18,7 @@ import (
     "bufio"
     "strings"
     "wio/cmd/wio/commands"
+    "errors"
 )
 
 const (
@@ -54,10 +55,10 @@ func (create Create) Execute() {
 
     if !create.Update && len(create.Context.Args()) < 2 {
         // When we are creating a project we need both directory and a board from args
-        log.Error(true, "Project directory or Board not specified")
+        commands.RecordError(errors.New("Project directory or Board not specified"), "")
     } else if !create.Update && len(create.Context.Args()) < 1 {
         // When we are updating a project we only need directory from args
-        log.Error(true, "Project directory not specified")
+        commands.RecordError(errors.New("Project directory not specified"), "")
     }
 
     createPacket := &PacketCreate{}
